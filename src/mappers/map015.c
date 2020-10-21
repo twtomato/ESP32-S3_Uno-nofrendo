@@ -90,23 +90,22 @@ static void map15_init(void)
 }
 
 static map_memwrite map15_memwrite[] =
-{
-   { 0x8000, 0xFFFF, map15_write },
-   {     -1,     -1, NULL }
-};
+    {
+        {0x8000, 0xFFFF, map15_write},
+        {-1, -1, NULL}};
 
 mapintf_t map15_intf =
-{
-   15, /* mapper number */
-   "Contra 100-in-1", /* mapper name */
-   map15_init, /* init routine */
-   NULL, /* vblank callback */
-   NULL, /* hblank callback */
-   NULL, /* get state (snss) */
-   NULL, /* set state (snss) */
-   NULL, /* memory read structure */
-   map15_memwrite, /* memory write structure */
-   NULL /* external sound device */
+    {
+        15,                /* mapper number */
+        "Contra 100-in-1", /* mapper name */
+        map15_init,        /* init routine */
+        NULL,              /* vblank callback */
+        NULL,              /* hblank callback */
+        NULL,              /* get state (snss) */
+        NULL,              /* set state (snss) */
+        NULL,              /* memory read structure */
+        map15_memwrite,    /* memory write structure */
+        NULL               /* external sound device */
 };
 
 /*

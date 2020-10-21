@@ -104,23 +104,22 @@ static void map160_init(void)
 }
 
 static map_memwrite map160_memwrite[] =
-{
-   { 0x8000, 0xFFFF, map160_write },
-   {     -1,     -1, NULL }
-};
+    {
+        {0x8000, 0xFFFF, map160_write},
+        {-1, -1, NULL}};
 
 mapintf_t map160_intf =
-{
-   160, /* mapper number */
-   "Aladdin (pirate)", /* mapper name */
-   map160_init, /* init routine */
-   NULL, /* vblank callback */
-   map160_hblank, /* hblank callback */
-   NULL, /* get state (snss) */
-   NULL, /* set state (snss) */
-   NULL, /* memory read structure */
-   map160_memwrite, /* memory write structure */
-   NULL /* external sound device */
+    {
+        160,                /* mapper number */
+        "Aladdin (pirate)", /* mapper name */
+        map160_init,        /* init routine */
+        NULL,               /* vblank callback */
+        map160_hblank,      /* hblank callback */
+        NULL,               /* get state (snss) */
+        NULL,               /* set state (snss) */
+        NULL,               /* memory read structure */
+        map160_memwrite,    /* memory write structure */
+        NULL                /* external sound device */
 };
 
 /*

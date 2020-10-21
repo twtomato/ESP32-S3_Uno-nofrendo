@@ -21,7 +21,7 @@ typedef struct config_s
    ** open returns true on success, false otherwise.
    */
    bool (*open)(void);
-      
+
    /* close saves the current configuration to disk.
    **
    ** close must be the last config function called.
@@ -39,7 +39,7 @@ typedef struct config_s
    ** If the specified "key" does not exist, the "def"ault is returned
    */
    const char *(*read_string)(const char *group, const char *key, const char *def);
-      
+
    void (*write_int)(const char *group, const char *key, int value);
    void (*write_string)(const char *group, const char *key, const char *value);
    char *filename;

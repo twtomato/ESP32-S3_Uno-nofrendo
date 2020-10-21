@@ -43,23 +43,22 @@ static void map8_init(void)
 }
 
 static map_memwrite map8_memwrite[] =
-{
-   { 0x8000, 0xFFFF, map8_write },
-   {     -1,     -1, NULL }
-};
+    {
+        {0x8000, 0xFFFF, map8_write},
+        {-1, -1, NULL}};
 
 mapintf_t map8_intf =
-{
-   8, /* mapper number */
-   "FFE F3xxx", /* mapper name */
-   map8_init, /* init routine */
-   NULL, /* vblank callback */
-   NULL, /* hblank callback */
-   NULL, /* get state (snss) */
-   NULL, /* set state (snss) */
-   NULL, /* memory read structure */
-   map8_memwrite, /* memory write structure */
-   NULL /* external sound device */
+    {
+        8,             /* mapper number */
+        "FFE F3xxx",   /* mapper name */
+        map8_init,     /* init routine */
+        NULL,          /* vblank callback */
+        NULL,          /* hblank callback */
+        NULL,          /* get state (snss) */
+        NULL,          /* set state (snss) */
+        NULL,          /* memory read structure */
+        map8_memwrite, /* memory write structure */
+        NULL           /* external sound device */
 };
 
 /*

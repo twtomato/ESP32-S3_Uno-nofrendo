@@ -29,7 +29,6 @@
 #include <noftypes.h>
 #include <log.h>
 
-
 static FILE *errorlog = NULL;
 static int (*log_func)(const char *string) = NULL;
 
@@ -60,14 +59,14 @@ int log_print(const char *string)
    /* if we have a custom logging function, use that */
    if (NULL != log_func)
       log_func(string);
-   
+
    /* Log it to disk, as well */
    fputs(string, errorlog);
 
    return 0;
 }
 
-int log_printf(const char *format, ... )
+int log_printf(const char *format, ...)
 {
    /* don't allocate on stack every call */
    static char buffer[1024 + 1];
@@ -87,7 +86,7 @@ int log_printf(const char *format, ... )
    return 0; /* should be number of chars written */
 }
 
-#else /* !NOFRENDO_DEBUG */
+#else  /* !NOFRENDO_DEBUG */
 
 int log_init(void)
 {
@@ -105,7 +104,7 @@ int log_print(const char *string)
    return 0;
 }
 
-int log_printf(const char *format, ... )
+int log_printf(const char *format, ...)
 {
    UNUSED(format);
 
@@ -130,7 +129,6 @@ void log_assert(int expr, int line, const char *file, char *msg)
 
    exit(-1);
 }
-
 
 /*
 ** $Log: log.c,v $

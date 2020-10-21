@@ -33,21 +33,21 @@
 #include <mmclist.h>
 #include <nes_rom.h>
 
-#define  MMC_8KROM         (mmc.cart->rom_banks * 2)
-#define  MMC_16KROM        (mmc.cart->rom_banks)
-#define  MMC_32KROM        (mmc.cart->rom_banks / 2)
-#define  MMC_8KVROM        (mmc.cart->vrom_banks)
-#define  MMC_4KVROM        (mmc.cart->vrom_banks * 2)
-#define  MMC_2KVROM        (mmc.cart->vrom_banks * 4)
-#define  MMC_1KVROM        (mmc.cart->vrom_banks * 8)
+#define MMC_8KROM (mmc.cart->rom_banks * 2)
+#define MMC_16KROM (mmc.cart->rom_banks)
+#define MMC_32KROM (mmc.cart->rom_banks / 2)
+#define MMC_8KVROM (mmc.cart->vrom_banks)
+#define MMC_4KVROM (mmc.cart->vrom_banks * 2)
+#define MMC_2KVROM (mmc.cart->vrom_banks * 4)
+#define MMC_1KVROM (mmc.cart->vrom_banks * 8)
 
-#define  MMC_LAST8KROM     (MMC_8KROM - 1)
-#define  MMC_LAST16KROM    (MMC_16KROM - 1)
-#define  MMC_LAST32KROM    (MMC_32KROM - 1)
-#define  MMC_LAST8KVROM    (MMC_8KVROM - 1)
-#define  MMC_LAST4KVROM    (MMC_4KVROM - 1)
-#define  MMC_LAST2KVROM    (MMC_2KVROM - 1)
-#define  MMC_LAST1KVROM    (MMC_1KVROM - 1)
+#define MMC_LAST8KROM (MMC_8KROM - 1)
+#define MMC_LAST16KROM (MMC_16KROM - 1)
+#define MMC_LAST32KROM (MMC_32KROM - 1)
+#define MMC_LAST8KVROM (MMC_8KVROM - 1)
+#define MMC_LAST4KVROM (MMC_4KVROM - 1)
+#define MMC_LAST2KVROM (MMC_2KVROM - 1)
+#define MMC_LAST1KVROM (MMC_1KVROM - 1)
 
 static mmc_t mmc;
 
@@ -110,7 +110,7 @@ void mmc_bankrom(int size, uint32 address, int bank)
 {
    nes6502_context mmc_cpu;
 
-   nes6502_getcontext(&mmc_cpu); 
+   nes6502_getcontext(&mmc_cpu);
 
    switch (size)
    {
@@ -220,7 +220,6 @@ void mmc_reset(void)
    log_printf("reset memory mapper\n");
 }
 
-
 void mmc_destroy(mmc_t **nes_mmc)
 {
    if (*nes_mmc)
@@ -231,7 +230,7 @@ mmc_t *mmc_create(rominfo_t *rominfo)
 {
    mmc_t *temp;
    mapintf_t **map_ptr;
-  
+
    for (map_ptr = mappers; (*map_ptr)->number != rominfo->mapper_number; map_ptr++)
    {
       if (NULL == *map_ptr)
@@ -253,7 +252,6 @@ mmc_t *mmc_create(rominfo_t *rominfo)
 
    return temp;
 }
-
 
 /*
 ** $Log: nes_mmc.c,v $

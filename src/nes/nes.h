@@ -36,26 +36,25 @@
 
 /* Visible (NTSC) screen height */
 #ifndef NES_VISIBLE_HEIGHT
-#define  NES_VISIBLE_HEIGHT   224
+#define NES_VISIBLE_HEIGHT 224
 #endif /* !NES_VISIBLE_HEIGHT */
-#define  NES_SCREEN_WIDTH     256
-#define  NES_SCREEN_HEIGHT    240
+#define NES_SCREEN_WIDTH 256
+#define NES_SCREEN_HEIGHT 240
 
 /* NTSC = 60Hz, PAL = 50Hz */
 #ifdef PAL
-#define  NES_REFRESH_RATE     50
+#define NES_REFRESH_RATE 50
 #else /* !PAL */
-#define  NES_REFRESH_RATE     60
+#define NES_REFRESH_RATE 60
 #endif /* !PAL */
 
-#define  MAX_MEM_HANDLERS     32
+#define MAX_MEM_HANDLERS 32
 
 enum
 {
    SOFT_RESET,
    HARD_RESET
 };
-
 
 typedef struct nes_s
 {
@@ -87,7 +86,6 @@ typedef struct nes_s
    bool pause;
 
 } nes_t;
-
 
 extern int nes_isourfile(const char *filename);
 

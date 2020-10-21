@@ -23,12 +23,11 @@ typedef struct myvar_s
 static myvar_t *myVars = NULL;
 static bool mySaveNeeded = false;
 
-
 static void my_destroy(myvar_t **var)
 {
    ASSERT(*var);
 
-   if ((*var)->group) 
+   if ((*var)->group)
       free((*var)->group);
    if ((*var)->key)
       free((*var)->key);
@@ -50,9 +49,7 @@ static myvar_t *my_create(const char *group, const char *key, const char *value)
    var->less = var->greater = NULL;
    var->group = var->key = var->value = NULL;
 
-   if ((var->group = malloc(strlen(group) + 1))
-       && (var->key = malloc(strlen(key) + 1))
-       && (var->value = malloc(strlen(value) + 1)))
+   if ((var->group = malloc(strlen(group) + 1)) && (var->key = malloc(strlen(key) + 1)) && (var->value = malloc(strlen(value) + 1)))
    {
       strcpy(var->group, group);
       strcpy(var->key, key);
@@ -64,14 +61,12 @@ static myvar_t *my_create(const char *group, const char *key, const char *value)
    return NULL;
 }
 
-static myvar_t *my_lookup(const char *group, const char *key) 
+static myvar_t *my_lookup(const char *group, const char *key)
 {
    int cmp;
    myvar_t *current = myVars;
 
-   while (current
-          && ((cmp = stricmp(group, current->group))
-              || (cmp = stricmp(key, current->key))))
+   while (current && ((cmp = stricmp(group, current->group)) || (cmp = stricmp(key, current->key))))
    {
       if (cmp < 0)
          current = current->less;
@@ -87,9 +82,7 @@ static void my_insert(myvar_t *var)
    int cmp;
    myvar_t **current = &myVars;
 
-   while (*current
-          && ((cmp = stricmp(var->group, (*current)->group))
-              || (cmp = stricmp(var->key, (*current)->key))))
+   while (*current && ((cmp = stricmp(var->group, (*current)->group)) || (cmp = stricmp(var->key, (*current)->key))))
    {
       current = (cmp < 0) ? &(*current)->less : &(*current)->greater;
    }
@@ -114,15 +107,15 @@ static void my_save(FILE *stream, myvar_t *var, char **group)
       return;
 
    my_save(stream, var->less, group);
-   
+
    if (stricmp(*group, var->group))
    {
       fprintf(stream, "\n[%s]\n", var->group);
       *group = var->group;
    }
-   
+
    fprintf(stream, "%s=%s\n", var->key, var->value);
-   
+
    my_save(stream, var->greater, group);
 }
 
@@ -178,8 +171,7 @@ static char *my_getline(FILE *stream)
       {
          return dynamic;
       }
-   } 
-   while (dynamic[strlen(dynamic) - 1] != '\n');
+   } while (dynamic[strlen(dynamic) - 1] != '\n');
 
    return dynamic;
 }
@@ -198,19 +190,19 @@ static int load_config(char *filename)
       while ((line = my_getline(config_file)))
       {
          char *s;
-         
+
          if ('\n' == line[strlen(line) - 1])
             line[strlen(line) - 1] = '\0';
-         
+
          s = line;
 
-         do 
+         do
          {
             /* eat up whitespace */
             while (isspace(*s))
                s++;
 
-            switch (*s) 
+            switch (*s)
             {
             case ';':
             case '#':
@@ -255,14 +247,14 @@ static int load_config(char *filename)
                   *s++ = '\0';
                }
 
-               while (strlen(key) && isspace(key[strlen(key) - 1])) 
+               while (strlen(key) && isspace(key[strlen(key) - 1]))
                   key[strlen(key) - 1] = '\0';
 
-               while (isspace(*s)) 
+               while (isspace(*s))
                   s++;
-               
-               while (strlen(s) && isspace(s[strlen(s) - 1])) 
-                  s[strlen(s) - 1]='\0';
+
+               while (strlen(s) && isspace(s[strlen(s) - 1]))
+                  s[strlen(s) - 1] = '\0';
 
                {
                   myvar_t *var = my_create(group ? group : "", key, s);
@@ -281,7 +273,7 @@ static int load_config(char *filename)
          free(line);
       }
 
-      if (group) 
+      if (group)
          free(group);
 
       fclose(config_file);
@@ -318,7 +310,7 @@ static bool open_config(void)
 
 static void close_config(void)
 {
-   if (true == mySaveNeeded) 
+   if (true == mySaveNeeded)
    {
       save_config(config.filename);
    }
@@ -357,7 +349,7 @@ static int read_int(const char *group, const char *key, int def)
    if (NULL == var)
    {
       write_int(group, key, def);
-      
+
       return def;
    }
 
@@ -401,15 +393,14 @@ static const char *read_string(const char *group, const char *key, const char *d
 
 /* interface */
 config_t config =
-{
-   open_config,
-   close_config,
-   read_int,
-   read_string,
-   write_int,
-   write_string,
-   CONFIG_FILE
-};
+    {
+        open_config,
+        close_config,
+        read_int,
+        read_string,
+        write_int,
+        write_string,
+        CONFIG_FILE};
 
 /*
 ** $Log: config.c,v $

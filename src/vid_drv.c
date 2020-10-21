@@ -40,31 +40,57 @@ static bitmap_t *primary_buffer = NULL, *back_buffer = NULL;
 static viddriver_t *driver = NULL;
 
 /* fast automagic loop unrolling */
-#define  DUFFS_DEVICE(transfer, count) \
-{ \
-   register int n = (count + 7) / 8; \
-   switch (count % 8) \
-   { \
-   case 0:  do {  { transfer; } \
-   case 7:        { transfer; } \
-   case 6:        { transfer; } \
-   case 5:        { transfer; } \
-   case 4:        { transfer; } \
-   case 3:        { transfer; } \
-   case 2:        { transfer; } \
-   case 1:        { transfer; } \
-            } while (--n > 0); \
-   } \
-}
+#define DUFFS_DEVICE(transfer, count)   \
+   {                                    \
+      register int n = (count + 7) / 8; \
+      switch (count % 8)                \
+      {                                 \
+      case 0:                           \
+         do                             \
+         {                              \
+            {                           \
+               transfer;                \
+            }                           \
+         case 7:                        \
+         {                              \
+            transfer;                   \
+         }                              \
+         case 6:                        \
+         {                              \
+            transfer;                   \
+         }                              \
+         case 5:                        \
+         {                              \
+            transfer;                   \
+         }                              \
+         case 4:                        \
+         {                              \
+            transfer;                   \
+         }                              \
+         case 3:                        \
+         {                              \
+            transfer;                   \
+         }                              \
+         case 2:                        \
+         {                              \
+            transfer;                   \
+         }                              \
+         case 1:                        \
+         {                              \
+            transfer;                   \
+         }                              \
+         } while (--n > 0);             \
+      }                                 \
+   }
 
 /* some system dependent replacement routines (for speed) */
 INLINE int vid_memcmp(const void *p1, const void *p2, int len)
 {
    /* check for 32-bit aligned data */
-   if (0 == (((uint32) p1 & 3) | ((uint32) p2 & 3)))
+   if (0 == (((uint32)p1 & 3) | ((uint32)p2 & 3)))
    {
-      uint32 *dw1 = (uint32 *) p1;
-      uint32 *dw2 = (uint32 *) p2;
+      uint32 *dw1 = (uint32 *)p1;
+      uint32 *dw2 = (uint32 *)p2;
 
       len >>= 2;
 
@@ -73,49 +99,48 @@ INLINE int vid_memcmp(const void *p1, const void *p2, int len)
    else
    /* fall back to 8-bit compares */
    {
-      uint8 *b1 = (uint8 *) p1;
-      uint8 *b2 = (uint8 *) p2;
-      
+      uint8 *b1 = (uint8 *)p1;
+      uint8 *b2 = (uint8 *)p2;
+
       DUFFS_DEVICE(if (*b1++ != *b2++) return -1, len);
    }
-   
+
    return 0;
 }
 
 /* super-dooper assembly memcpy (thanks, SDL!) */
 #if defined(__GNUC__) && defined(i386)
-#define vid_memcpy(dest, src, len) \
-{ \
-   int u0, u1, u2; \
-   __asm__ __volatile__ ( \
-      "  cld            \n" \
-      "  rep            \n" \
-      "  movsl          \n" \
-      "  testb $2,%b4   \n" \
-      "  je    1f       \n" \
-      "  movsw          \n" \
-      "1:               \n" \
-      "  testb $1,%b4   \n" \
-      "  je 2f          \n" \
-      "  movsb          \n" \
-      "2:               \n" \
-      : "=&c" (u0), "=&D" (u1), "=&S" (u2) \
-      : "0" ((len)/4), "q" (len), "1" (dest), "2" (src) \
-      : "memory"); \
-}
-#else /* !(defined(__GNUC__) && defined(i386)) */
+#define vid_memcpy(dest, src, len)                        \
+   {                                                      \
+      int u0, u1, u2;                                     \
+      __asm__ __volatile__(                               \
+          "  cld            \n"                           \
+          "  rep            \n"                           \
+          "  movsl          \n"                           \
+          "  testb $2,%b4   \n"                           \
+          "  je    1f       \n"                           \
+          "  movsw          \n"                           \
+          "1:               \n"                           \
+          "  testb $1,%b4   \n"                           \
+          "  je 2f          \n"                           \
+          "  movsb          \n"                           \
+          "2:               \n"                           \
+          : "=&c"(u0), "=&D"(u1), "=&S"(u2)               \
+          : "0"((len) / 4), "q"(len), "1"(dest), "2"(src) \
+          : "memory");                                    \
+   }
+#else  /* !(defined(__GNUC__) && defined(i386)) */
 INLINE void vid_memcpy(void *dest, const void *src, int len)
 {
-   uint32 *s = (uint32 *) src;
-   uint32 *d = (uint32 *) dest;
+   uint32 *s = (uint32 *)src;
+   uint32 *d = (uint32 *)dest;
 
-   ASSERT(0 == ((len & 3) | ((uint32) src & 3) | ((uint32) dest & 3)));
+   ASSERT(0 == ((len & 3) | ((uint32)src & 3) | ((uint32)dest & 3)));
    len >>= 2;
 
    DUFFS_DEVICE(*d++ = *s++, len);
 }
 #endif /* !(defined(__GNUC__) && defined(i386)) */
-
 
 /* TODO: any way to remove this filth (GUI needs it)? */
 bitmap_t *vid_getbuffer(void)
@@ -132,7 +157,7 @@ void vid_setpalette(rgb_t *p)
 }
 
 /* blits a bitmap onto primary buffer */
-void vid_blit(bitmap_t *bitmap, int src_x, int src_y, int dest_x, int dest_y, 
+void vid_blit(bitmap_t *bitmap, int src_x, int src_y, int dest_x, int dest_y,
               int width, int height)
 {
    int bitmap_pitch, primary_pitch;
@@ -182,7 +207,7 @@ void vid_blit(bitmap_t *bitmap, int src_x, int src_y, int dest_x, int dest_y,
    if (dest_x >= primary_buffer->width)
       return;
    if (dest_x + width > primary_buffer->width)
-      width = primary_buffer->width - dest_x;   
+      width = primary_buffer->width - dest_x;
 
    src_ptr = bitmap->line[src_y] + src_x;
    dest_ptr = primary_buffer->line[dest_y] + dest_x;
@@ -234,7 +259,7 @@ static void vid_blitscreen(int num_dirties, rect_t *dirty_rects)
       blit_width = screen->width;
       dest_x = 0;
    }
-   
+
    /* should we just copy the entire screen? */
    if (-1 == num_dirties)
    {
@@ -263,14 +288,15 @@ static void vid_blitscreen(int num_dirties, rect_t *dirty_rects)
             height = blit_height;
 
          j = 0;
-         DUFFS_DEVICE(  
-         {
-            vid_memcpy(screen->line[dest_y + rects->y + j] + rects->x + dest_x,
-                       primary_buffer->line[src_y + rects->y + j] + rects->x + src_x,
-                       rects->w);
-            j++;
-            blit_height--;
-         }, height);
+         DUFFS_DEVICE(
+             {
+                vid_memcpy(screen->line[dest_y + rects->y + j] + rects->x + dest_x,
+                           primary_buffer->line[src_y + rects->y + j] + rects->x + src_x,
+                           rects->w);
+                j++;
+                blit_height--;
+             },
+             height);
 
          rects++;
       }
@@ -282,10 +308,10 @@ static void vid_blitscreen(int num_dirties, rect_t *dirty_rects)
 
 /* TODO: this code is sickly */
 
-#define  CHUNK_WIDTH    256
-#define  CHUNK_HEIGHT   16
-#define  MAX_DIRTIES    ((256 / CHUNK_WIDTH) * (240 / CHUNK_HEIGHT))
-#define  DIRTY_CUTOFF   ((3 * MAX_DIRTIES) / 4)
+#define CHUNK_WIDTH 256
+#define CHUNK_HEIGHT 16
+#define MAX_DIRTIES ((256 / CHUNK_WIDTH) * (240 / CHUNK_HEIGHT))
+#define DIRTY_CUTOFF ((3 * MAX_DIRTIES) / 4)
 
 #if 0
 INLINE int calc_dirties(rect_t *list)
@@ -444,7 +470,6 @@ void vid_shutdown(void)
    if (driver && driver->shutdown)
       driver->shutdown();
 }
-
 
 /*
 ** $Log: vid_drv.c,v $

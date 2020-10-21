@@ -44,7 +44,7 @@ static struct
    char *filename, *nextfilename;
    system_t type, nexttype;
 
-   union 
+   union
    {
       nes_t *nes;
    } machine;
@@ -128,16 +128,16 @@ static system_t detect_systemtype(const char *filename)
 
    if (0 == nes_isourfile(filename))
       return system_nes;
-   
+
    /* can't figure out what this thing is */
    return system_unknown;
 }
 
 static int install_timer(int hertz)
 {
-   return osd_installtimer(hertz, (void *) timer_isr,
-                           (int) timer_isr_end - (int) timer_isr,
-                           (void *) &nofrendo_ticks, 
+   return osd_installtimer(hertz, (void *)timer_isr,
+                           (int)timer_isr_end - (int)timer_isr,
+                           (void *)&nofrendo_ticks,
                            sizeof(nofrendo_ticks));
 }
 
@@ -176,7 +176,7 @@ static int internal_insert(const char *filename, system_t type)
 
       nes_emulate();
       break;
-   
+
    case system_unknown:
    default:
       log_printf("system type unknown, playing nofrendo NES intro.\n");
@@ -208,7 +208,7 @@ int main(int argc, char *argv[])
    console.nexttype = system_unknown;
    console.refresh_rate = 0;
    console.quit = false;
-   
+
    if (log_init())
       return -1;
 

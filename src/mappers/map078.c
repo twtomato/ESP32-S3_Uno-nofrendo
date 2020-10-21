@@ -54,23 +54,22 @@ static void map78_write(uint32 address, uint8 value)
 }
 
 static map_memwrite map78_memwrite[] =
-{
-   { 0x8000, 0xFFFF, map78_write },
-   {     -1,     -1, NULL }
-};
+    {
+        {0x8000, 0xFFFF, map78_write},
+        {-1, -1, NULL}};
 
 mapintf_t map78_intf =
-{
-   78, /* mapper number */
-   "Mapper 78", /* mapper name */
-   NULL, /* init routine */
-   NULL, /* vblank callback */
-   NULL, /* hblank callback */
-   NULL, /* get state (snss) */
-   NULL, /* set state (snss) */
-   NULL, /* memory read structure */
-   map78_memwrite, /* memory write structure */
-   NULL /* external sound device */
+    {
+        78,             /* mapper number */
+        "Mapper 78",    /* mapper name */
+        NULL,           /* init routine */
+        NULL,           /* vblank callback */
+        NULL,           /* hblank callback */
+        NULL,           /* get state (snss) */
+        NULL,           /* set state (snss) */
+        NULL,           /* memory read structure */
+        map78_memwrite, /* memory write structure */
+        NULL            /* external sound device */
 };
 
 /*

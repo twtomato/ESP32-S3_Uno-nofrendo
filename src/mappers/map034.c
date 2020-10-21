@@ -47,24 +47,23 @@ static void map34_write(uint32 address, uint8 value)
    }
 }
 
-static map_memwrite map34_memwrite[] = 
-{
-   { 0x7FFD, 0xFFFF, map34_write },
-   { -1, -1, NULL }
-};
+static map_memwrite map34_memwrite[] =
+    {
+        {0x7FFD, 0xFFFF, map34_write},
+        {-1, -1, NULL}};
 
-mapintf_t map34_intf = 
-{
-   34, /* mapper number */
-   "Nina-1", /* mapper name */
-   map34_init, /* init routine */
-   NULL, /* vblank callback */
-   NULL, /* hblank callback */
-   NULL, /* get state (snss) */
-   NULL, /* set state (snss) */
-   NULL, /* memory read structure */
-   map34_memwrite, /* memory write structure */
-   NULL /* external sound device */
+mapintf_t map34_intf =
+    {
+        34,             /* mapper number */
+        "Nina-1",       /* mapper name */
+        map34_init,     /* init routine */
+        NULL,           /* vblank callback */
+        NULL,           /* hblank callback */
+        NULL,           /* get state (snss) */
+        NULL,           /* set state (snss) */
+        NULL,           /* memory read structure */
+        map34_memwrite, /* memory write structure */
+        NULL            /* external sound device */
 };
 
 /*

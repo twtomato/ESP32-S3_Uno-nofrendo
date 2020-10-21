@@ -28,18 +28,17 @@
 #include <log.h>
 #include <nes_apu.h>
 #include "nes6502.h"
- 
 
-#define  APU_OVERSAMPLE
-#define  APU_VOLUME_DECAY(x)  ((x) -= ((x) >> 7))
+#define APU_OVERSAMPLE
+#define APU_VOLUME_DECAY(x) ((x) -= ((x) >> 7))
 
 /* the following seem to be the correct (empirically determined)
 ** relative volumes between the sound channels
 */
-#define  APU_RECTANGLE_OUTPUT(channel) (apu.rectangle[channel].output_vol)
-#define  APU_TRIANGLE_OUTPUT           (apu.triangle.output_vol + (apu.triangle.output_vol >> 2))
-#define  APU_NOISE_OUTPUT              ((apu.noise.output_vol + apu.noise.output_vol + apu.noise.output_vol) >> 2)
-#define  APU_DMC_OUTPUT                ((apu.dmc.output_vol + apu.dmc.output_vol + apu.dmc.output_vol) >> 2)
+#define APU_RECTANGLE_OUTPUT(channel) (apu.rectangle[channel].output_vol)
+#define APU_TRIANGLE_OUTPUT (apu.triangle.output_vol + (apu.triangle.output_vol >> 2))
+#define APU_NOISE_OUTPUT ((apu.noise.output_vol + apu.noise.output_vol + apu.noise.output_vol) >> 2)
+#define APU_DMC_OUTPUT ((apu.dmc.output_vol + apu.dmc.output_vol + apu.dmc.output_vol) >> 2)
 
 /* active APU */
 static apu_t apu;
@@ -55,51 +54,45 @@ static int8 noise_long_lut[APU_NOISE_32K];
 static int8 noise_short_lut[APU_NOISE_93];
 #endif /* !REALTIME_NOISE */
 
-
 /* vblank length table used for rectangles, triangle, noise */
 static const uint8 vbl_length[32] =
-{
-    5, 127,
-   10,   1,
-   19,   2,
-   40,   3,
-   80,   4,
-   30,   5,
-    7,   6,
-   13,   7,
-    6,   8,
-   12,   9,
-   24,  10,
-   48,  11,
-   96,  12,
-   36,  13,
-    8,  14,
-   16,  15
-};
+    {
+        5, 127,
+        10, 1,
+        19, 2,
+        40, 3,
+        80, 4,
+        30, 5,
+        7, 6,
+        13, 7,
+        6, 8,
+        12, 9,
+        24, 10,
+        48, 11,
+        96, 12,
+        36, 13,
+        8, 14,
+        16, 15};
 
 /* frequency limit of rectangle channels */
 static const int freq_limit[8] =
-{
-   0x3FF, 0x555, 0x666, 0x71C, 0x787, 0x7C1, 0x7E0, 0x7F0
-};
+    {
+        0x3FF, 0x555, 0x666, 0x71C, 0x787, 0x7C1, 0x7E0, 0x7F0};
 
 /* noise frequency lookup table */
 static const int noise_freq[16] =
-{
-     4,    8,   16,   32,   64,   96,  128,  160,
-   202,  254,  380,  508,  762, 1016, 2034, 4068
-};
+    {
+        4, 8, 16, 32, 64, 96, 128, 160,
+        202, 254, 380, 508, 762, 1016, 2034, 4068};
 
 /* DMC transfer freqs */
 const int dmc_clocks[16] =
-{
-   428, 380, 340, 320, 286, 254, 226, 214,
-   190, 160, 142, 128, 106,  85,  72,  54
-};
+    {
+        428, 380, 340, 320, 286, 254, 226, 214,
+        190, 160, 142, 128, 106, 85, 72, 54};
 
 /* ratios of pos/neg pulse for rectangle waves */
-static const int duty_flip[4] = { 2, 4, 8, 12 };
-
+static const int duty_flip[4] = {2, 4, 8, 12};
 
 void apu_setcontext(apu_t *src_apu)
 {
@@ -136,7 +129,7 @@ INLINE int8 shift_register15(uint8 xor_tap)
    sreg |= (bit14 << 14);
    return (bit0 ^ 1);
 }
-#else /* !REALTIME_NOISE */
+#else  /* !REALTIME_NOISE */
 static void shift_register15(int8 *buf, int count)
 {
    static int sreg = 0x4000;
@@ -178,171 +171,168 @@ static void shift_register15(int8 *buf, int count)
 */
 #ifdef APU_OVERSAMPLE
 
-#define  APU_MAKE_RECTANGLE(ch) \
-static int32 apu_rectangle_##ch(void) \
-{ \
-   int32 output, total; \
-   int num_times; \
-\
-   APU_VOLUME_DECAY(apu.rectangle[ch].output_vol); \
-\
-   if (false == apu.rectangle[ch].enabled || 0 == apu.rectangle[ch].vbl_length) \
-      return APU_RECTANGLE_OUTPUT(ch); \
-\
-   /* vbl length counter */ \
-   if (false == apu.rectangle[ch].holdnote) \
-      apu.rectangle[ch].vbl_length--; \
-\
-   /* envelope decay at a rate of (env_delay + 1) / 240 secs */ \
-   apu.rectangle[ch].env_phase -= 4; /* 240/60 */ \
-   while (apu.rectangle[ch].env_phase < 0) \
-   { \
-      apu.rectangle[ch].env_phase += apu.rectangle[ch].env_delay; \
-\
-      if (apu.rectangle[ch].holdnote) \
-         apu.rectangle[ch].env_vol = (apu.rectangle[ch].env_vol + 1) & 0x0F; \
-      else if (apu.rectangle[ch].env_vol < 0x0F) \
-         apu.rectangle[ch].env_vol++; \
-   } \
-\
-   /* TODO: find true relation of freq_limit to register values */ \
-   if (apu.rectangle[ch].freq < 8 \
-       || (false == apu.rectangle[ch].sweep_inc \
-           && apu.rectangle[ch].freq > apu.rectangle[ch].freq_limit)) \
-      return APU_RECTANGLE_OUTPUT(ch); \
-\
-   /* frequency sweeping at a rate of (sweep_delay + 1) / 120 secs */ \
-   if (apu.rectangle[ch].sweep_on && apu.rectangle[ch].sweep_shifts) \
-   { \
-      apu.rectangle[ch].sweep_phase -= 2; /* 120/60 */ \
-      while (apu.rectangle[ch].sweep_phase < 0) \
-      { \
-         apu.rectangle[ch].sweep_phase += apu.rectangle[ch].sweep_delay; \
-\
-         if (apu.rectangle[ch].sweep_inc) /* ramp up */ \
-         { \
-            if (0 == ch) \
-               apu.rectangle[ch].freq += ~(apu.rectangle[ch].freq >> apu.rectangle[ch].sweep_shifts); \
-            else \
-               apu.rectangle[ch].freq -= (apu.rectangle[ch].freq >> apu.rectangle[ch].sweep_shifts); \
-         } \
-         else /* ramp down */ \
-         { \
-            apu.rectangle[ch].freq += (apu.rectangle[ch].freq >> apu.rectangle[ch].sweep_shifts); \
-         } \
-      } \
-   } \
-\
-   apu.rectangle[ch].accum -= apu.cycle_rate; \
-   if (apu.rectangle[ch].accum >= 0) \
-      return APU_RECTANGLE_OUTPUT(ch); \
-\
-   if (apu.rectangle[ch].fixed_envelope) \
-      output = apu.rectangle[ch].volume << 8; /* fixed volume */ \
-   else \
-      output = (apu.rectangle[ch].env_vol ^ 0x0F) << 8; \
-\
-   num_times = total = 0; \
-\
-   while (apu.rectangle[ch].accum < 0) \
-   { \
-      apu.rectangle[ch].accum += apu.rectangle[ch].freq + 1; \
-      apu.rectangle[ch].adder = (apu.rectangle[ch].adder + 1) & 0x0F; \
-\
-      if (apu.rectangle[ch].adder < apu.rectangle[ch].duty_flip) \
-         total += output; \
-      else \
-         total -= output; \
-\
-      num_times++; \
-   } \
-\
-   apu.rectangle[ch].output_vol = total / num_times; \
-   return APU_RECTANGLE_OUTPUT(ch); \
-} 
+#define APU_MAKE_RECTANGLE(ch)                                                                                                           \
+   static int32 apu_rectangle_##ch(void)                                                                                                 \
+   {                                                                                                                                     \
+      int32 output, total;                                                                                                               \
+      int num_times;                                                                                                                     \
+                                                                                                                                         \
+      APU_VOLUME_DECAY(apu.rectangle[ch].output_vol);                                                                                    \
+                                                                                                                                         \
+      if (false == apu.rectangle[ch].enabled || 0 == apu.rectangle[ch].vbl_length)                                                       \
+         return APU_RECTANGLE_OUTPUT(ch);                                                                                                \
+                                                                                                                                         \
+      /* vbl length counter */                                                                                                           \
+      if (false == apu.rectangle[ch].holdnote)                                                                                           \
+         apu.rectangle[ch].vbl_length--;                                                                                                 \
+                                                                                                                                         \
+      /* envelope decay at a rate of (env_delay + 1) / 240 secs */                                                                       \
+      apu.rectangle[ch].env_phase -= 4; /* 240/60 */                                                                                     \
+      while (apu.rectangle[ch].env_phase < 0)                                                                                            \
+      {                                                                                                                                  \
+         apu.rectangle[ch].env_phase += apu.rectangle[ch].env_delay;                                                                     \
+                                                                                                                                         \
+         if (apu.rectangle[ch].holdnote)                                                                                                 \
+            apu.rectangle[ch].env_vol = (apu.rectangle[ch].env_vol + 1) & 0x0F;                                                          \
+         else if (apu.rectangle[ch].env_vol < 0x0F)                                                                                      \
+            apu.rectangle[ch].env_vol++;                                                                                                 \
+      }                                                                                                                                  \
+                                                                                                                                         \
+      /* TODO: find true relation of freq_limit to register values */                                                                    \
+      if (apu.rectangle[ch].freq < 8 || (false == apu.rectangle[ch].sweep_inc && apu.rectangle[ch].freq > apu.rectangle[ch].freq_limit)) \
+         return APU_RECTANGLE_OUTPUT(ch);                                                                                                \
+                                                                                                                                         \
+      /* frequency sweeping at a rate of (sweep_delay + 1) / 120 secs */                                                                 \
+      if (apu.rectangle[ch].sweep_on && apu.rectangle[ch].sweep_shifts)                                                                  \
+      {                                                                                                                                  \
+         apu.rectangle[ch].sweep_phase -= 2; /* 120/60 */                                                                                \
+         while (apu.rectangle[ch].sweep_phase < 0)                                                                                       \
+         {                                                                                                                               \
+            apu.rectangle[ch].sweep_phase += apu.rectangle[ch].sweep_delay;                                                              \
+                                                                                                                                         \
+            if (apu.rectangle[ch].sweep_inc) /* ramp up */                                                                               \
+            {                                                                                                                            \
+               if (0 == ch)                                                                                                              \
+                  apu.rectangle[ch].freq += ~(apu.rectangle[ch].freq >> apu.rectangle[ch].sweep_shifts);                                 \
+               else                                                                                                                      \
+                  apu.rectangle[ch].freq -= (apu.rectangle[ch].freq >> apu.rectangle[ch].sweep_shifts);                                  \
+            }                                                                                                                            \
+            else /* ramp down */                                                                                                         \
+            {                                                                                                                            \
+               apu.rectangle[ch].freq += (apu.rectangle[ch].freq >> apu.rectangle[ch].sweep_shifts);                                     \
+            }                                                                                                                            \
+         }                                                                                                                               \
+      }                                                                                                                                  \
+                                                                                                                                         \
+      apu.rectangle[ch].accum -= apu.cycle_rate;                                                                                         \
+      if (apu.rectangle[ch].accum >= 0)                                                                                                  \
+         return APU_RECTANGLE_OUTPUT(ch);                                                                                                \
+                                                                                                                                         \
+      if (apu.rectangle[ch].fixed_envelope)                                                                                              \
+         output = apu.rectangle[ch].volume << 8; /* fixed volume */                                                                      \
+      else                                                                                                                               \
+         output = (apu.rectangle[ch].env_vol ^ 0x0F) << 8;                                                                               \
+                                                                                                                                         \
+      num_times = total = 0;                                                                                                             \
+                                                                                                                                         \
+      while (apu.rectangle[ch].accum < 0)                                                                                                \
+      {                                                                                                                                  \
+         apu.rectangle[ch].accum += apu.rectangle[ch].freq + 1;                                                                          \
+         apu.rectangle[ch].adder = (apu.rectangle[ch].adder + 1) & 0x0F;                                                                 \
+                                                                                                                                         \
+         if (apu.rectangle[ch].adder < apu.rectangle[ch].duty_flip)                                                                      \
+            total += output;                                                                                                             \
+         else                                                                                                                            \
+            total -= output;                                                                                                             \
+                                                                                                                                         \
+         num_times++;                                                                                                                    \
+      }                                                                                                                                  \
+                                                                                                                                         \
+      apu.rectangle[ch].output_vol = total / num_times;                                                                                  \
+      return APU_RECTANGLE_OUTPUT(ch);                                                                                                   \
+   }
 
 #else /* !APU_OVERSAMPLE */
-#define  APU_MAKE_RECTANGLE(ch) \
-static int32 apu_rectangle_##ch(void) \
-{ \
-   int32 output; \
-\
-   APU_VOLUME_DECAY(apu.rectangle[ch].output_vol); \
-\
-   if (false == apu.rectangle[ch].enabled || 0 == apu.rectangle[ch].vbl_length) \
-      return APU_RECTANGLE_OUTPUT(ch); \
-\
-   /* vbl length counter */ \
-   if (false == apu.rectangle[ch].holdnote) \
-      apu.rectangle[ch].vbl_length--; \
-\
-   /* envelope decay at a rate of (env_delay + 1) / 240 secs */ \
-   apu.rectangle[ch].env_phase -= 4; /* 240/60 */ \
-   while (apu.rectangle[ch].env_phase < 0) \
-   { \
-      apu.rectangle[ch].env_phase += apu.rectangle[ch].env_delay; \
-\
-      if (apu.rectangle[ch].holdnote) \
-         apu.rectangle[ch].env_vol = (apu.rectangle[ch].env_vol + 1) & 0x0F; \
-      else if (apu.rectangle[ch].env_vol < 0x0F) \
-         apu.rectangle[ch].env_vol++; \
-   } \
-\
-   /* TODO: find true relation of freq_limit to register values */ \
-   if (apu.rectangle[ch].freq < 8 || (false == apu.rectangle[ch].sweep_inc && apu.rectangle[ch].freq > apu.rectangle[ch].freq_limit)) \
-      return APU_RECTANGLE_OUTPUT(ch); \
-\
-   /* frequency sweeping at a rate of (sweep_delay + 1) / 120 secs */ \
-   if (apu.rectangle[ch].sweep_on && apu.rectangle[ch].sweep_shifts) \
-   { \
-      apu.rectangle[ch].sweep_phase -= 2; /* 120/60 */ \
-      while (apu.rectangle[ch].sweep_phase < 0) \
-      { \
-         apu.rectangle[ch].sweep_phase += apu.rectangle[ch].sweep_delay; \
-\
-         if (apu.rectangle[ch].sweep_inc) /* ramp up */ \
-         { \
-            if (0 == ch) \
-               apu.rectangle[ch].freq += ~(apu.rectangle[ch].freq >> apu.rectangle[ch].sweep_shifts); \
-            else \
-               apu.rectangle[ch].freq -= (apu.rectangle[ch].freq >> apu.rectangle[ch].sweep_shifts); \
-         } \
-         else /* ramp down */ \
-         { \
-            apu.rectangle[ch].freq += (apu.rectangle[ch].freq >> apu.rectangle[ch].sweep_shifts); \
-         } \
-      } \
-   } \
-\
-   apu.rectangle[ch].accum -= apu.cycle_rate; \
-   if (apu.rectangle[ch].accum >= 0) \
-      return APU_RECTANGLE_OUTPUT(ch); \
-\
-   while (apu.rectangle[ch].accum < 0) \
-   { \
-      apu.rectangle[ch].accum += (apu.rectangle[ch].freq + 1); \
-      apu.rectangle[ch].adder = (apu.rectangle[ch].adder + 1) & 0x0F; \
-   } \
-\
-   if (apu.rectangle[ch].fixed_envelope) \
-      output = apu.rectangle[ch].volume << 8; /* fixed volume */ \
-   else \
-      output = (apu.rectangle[ch].env_vol ^ 0x0F) << 8; \
-\
-   if (0 == apu.rectangle[ch].adder) \
-      apu.rectangle[ch].output_vol = output; \
-   else if (apu.rectangle[ch].adder == apu.rectangle[ch].duty_flip) \
-      apu.rectangle[ch].output_vol = -output; \
-\
-   return APU_RECTANGLE_OUTPUT(ch); \
-}
+#define APU_MAKE_RECTANGLE(ch)                                                                                                           \
+   static int32 apu_rectangle_##ch(void)                                                                                                 \
+   {                                                                                                                                     \
+      int32 output;                                                                                                                      \
+                                                                                                                                         \
+      APU_VOLUME_DECAY(apu.rectangle[ch].output_vol);                                                                                    \
+                                                                                                                                         \
+      if (false == apu.rectangle[ch].enabled || 0 == apu.rectangle[ch].vbl_length)                                                       \
+         return APU_RECTANGLE_OUTPUT(ch);                                                                                                \
+                                                                                                                                         \
+      /* vbl length counter */                                                                                                           \
+      if (false == apu.rectangle[ch].holdnote)                                                                                           \
+         apu.rectangle[ch].vbl_length--;                                                                                                 \
+                                                                                                                                         \
+      /* envelope decay at a rate of (env_delay + 1) / 240 secs */                                                                       \
+      apu.rectangle[ch].env_phase -= 4; /* 240/60 */                                                                                     \
+      while (apu.rectangle[ch].env_phase < 0)                                                                                            \
+      {                                                                                                                                  \
+         apu.rectangle[ch].env_phase += apu.rectangle[ch].env_delay;                                                                     \
+                                                                                                                                         \
+         if (apu.rectangle[ch].holdnote)                                                                                                 \
+            apu.rectangle[ch].env_vol = (apu.rectangle[ch].env_vol + 1) & 0x0F;                                                          \
+         else if (apu.rectangle[ch].env_vol < 0x0F)                                                                                      \
+            apu.rectangle[ch].env_vol++;                                                                                                 \
+      }                                                                                                                                  \
+                                                                                                                                         \
+      /* TODO: find true relation of freq_limit to register values */                                                                    \
+      if (apu.rectangle[ch].freq < 8 || (false == apu.rectangle[ch].sweep_inc && apu.rectangle[ch].freq > apu.rectangle[ch].freq_limit)) \
+         return APU_RECTANGLE_OUTPUT(ch);                                                                                                \
+                                                                                                                                         \
+      /* frequency sweeping at a rate of (sweep_delay + 1) / 120 secs */                                                                 \
+      if (apu.rectangle[ch].sweep_on && apu.rectangle[ch].sweep_shifts)                                                                  \
+      {                                                                                                                                  \
+         apu.rectangle[ch].sweep_phase -= 2; /* 120/60 */                                                                                \
+         while (apu.rectangle[ch].sweep_phase < 0)                                                                                       \
+         {                                                                                                                               \
+            apu.rectangle[ch].sweep_phase += apu.rectangle[ch].sweep_delay;                                                              \
+                                                                                                                                         \
+            if (apu.rectangle[ch].sweep_inc) /* ramp up */                                                                               \
+            {                                                                                                                            \
+               if (0 == ch)                                                                                                              \
+                  apu.rectangle[ch].freq += ~(apu.rectangle[ch].freq >> apu.rectangle[ch].sweep_shifts);                                 \
+               else                                                                                                                      \
+                  apu.rectangle[ch].freq -= (apu.rectangle[ch].freq >> apu.rectangle[ch].sweep_shifts);                                  \
+            }                                                                                                                            \
+            else /* ramp down */                                                                                                         \
+            {                                                                                                                            \
+               apu.rectangle[ch].freq += (apu.rectangle[ch].freq >> apu.rectangle[ch].sweep_shifts);                                     \
+            }                                                                                                                            \
+         }                                                                                                                               \
+      }                                                                                                                                  \
+                                                                                                                                         \
+      apu.rectangle[ch].accum -= apu.cycle_rate;                                                                                         \
+      if (apu.rectangle[ch].accum >= 0)                                                                                                  \
+         return APU_RECTANGLE_OUTPUT(ch);                                                                                                \
+                                                                                                                                         \
+      while (apu.rectangle[ch].accum < 0)                                                                                                \
+      {                                                                                                                                  \
+         apu.rectangle[ch].accum += (apu.rectangle[ch].freq + 1);                                                                        \
+         apu.rectangle[ch].adder = (apu.rectangle[ch].adder + 1) & 0x0F;                                                                 \
+      }                                                                                                                                  \
+                                                                                                                                         \
+      if (apu.rectangle[ch].fixed_envelope)                                                                                              \
+         output = apu.rectangle[ch].volume << 8; /* fixed volume */                                                                      \
+      else                                                                                                                               \
+         output = (apu.rectangle[ch].env_vol ^ 0x0F) << 8;                                                                               \
+                                                                                                                                         \
+      if (0 == apu.rectangle[ch].adder)                                                                                                  \
+         apu.rectangle[ch].output_vol = output;                                                                                          \
+      else if (apu.rectangle[ch].adder == apu.rectangle[ch].duty_flip)                                                                   \
+         apu.rectangle[ch].output_vol = -output;                                                                                         \
+                                                                                                                                         \
+      return APU_RECTANGLE_OUTPUT(ch);                                                                                                   \
+   }
 
 #endif /* !APU_OVERSAMPLE */
 
 /* generate the functions */
 APU_MAKE_RECTANGLE(0)
 APU_MAKE_RECTANGLE(1)
-
 
 /* TRIANGLE WAVE
 ** =============
@@ -373,7 +363,7 @@ static int32 apu_triangle(void)
    if (0 == apu.triangle.linear_length || apu.triangle.freq < 4) /* inaudible */
       return APU_TRIANGLE_OUTPUT;
 
-   apu.triangle.accum -= apu.cycle_rate; \
+   apu.triangle.accum -= apu.cycle_rate;
    while (apu.triangle.accum < 0)
    {
       apu.triangle.accum += apu.triangle.freq;
@@ -388,7 +378,6 @@ static int32 apu_triangle(void)
    return APU_TRIANGLE_OUTPUT;
 }
 
-
 /* WHITE NOISE CHANNEL
 ** ===================
 ** reg0: 0-3=volume, 4=envelope, 5=hold
@@ -401,7 +390,7 @@ static int32 apu_noise(void)
    int32 outvol;
 
 #if defined(APU_OVERSAMPLE) && defined(REALTIME_NOISE)
-#else /* !(APU_OVERSAMPLE && REALTIME_NOISE) */
+#else  /* !(APU_OVERSAMPLE && REALTIME_NOISE) */
    int32 noise_bit;
 #endif /* !(APU_OVERSAMPLE && REALTIME_NOISE) */
 #ifdef APU_OVERSAMPLE
@@ -433,7 +422,7 @@ static int32 apu_noise(void)
    apu.noise.accum -= apu.cycle_rate;
    if (apu.noise.accum >= 0)
       return APU_NOISE_OUTPUT;
-   
+
 #ifdef APU_OVERSAMPLE
    if (apu.noise.fixed_envelope)
       outvol = apu.noise.volume << 8; /* fixed volume */
@@ -456,7 +445,7 @@ static int32 apu_noise(void)
          total -= outvol;
 
       num_times++;
-#else /* !APU_OVERSAMPLE */
+#else  /* !APU_OVERSAMPLE */
       noise_bit = shift_register15(apu.noise.xor_tap);
 #endif /* !APU_OVERSAMPLE */
 
@@ -514,7 +503,6 @@ static int32 apu_noise(void)
    return APU_NOISE_OUTPUT;
 }
 
-
 INLINE void apu_dmcreload(void)
 {
    apu.dmc.address = apu.dmc.cached_addr;
@@ -539,17 +527,17 @@ static int32 apu_dmc(void)
    if (apu.dmc.dma_length)
    {
       apu.dmc.accum -= apu.cycle_rate;
-      
+
       while (apu.dmc.accum < 0)
       {
          apu.dmc.accum += apu.dmc.freq;
-         
+
          delta_bit = (apu.dmc.dma_length & 7) ^ 7;
-         
+
          if (7 == delta_bit)
          {
             apu.dmc.cur_byte = nes6502_getbyte(apu.dmc.address);
-            
+
             /* steal a cycle from CPU*/
             nes6502_burn(1);
 
@@ -593,7 +581,7 @@ static int32 apu_dmc(void)
             }
          }
          /* negative delta */
-         else            
+         else
          {
             if (apu.dmc.regs[1] > 1)
             {
@@ -607,9 +595,8 @@ static int32 apu_dmc(void)
    return APU_DMC_OUTPUT;
 }
 
-
 void apu_write(uint32 address, uint8 value)
-{  
+{
    int chan;
 
    switch (address)
@@ -672,7 +659,7 @@ void apu_write(uint32 address, uint8 value)
    case APU_WRC3:
 
       apu.triangle.regs[2] = value;
-  
+
       /* this is somewhat of a hack.  there appears to be some latency on 
       ** the Real Thing between when trireg0 is written to and when the 
       ** linear length counter actually begins its countdown.  we want to 
@@ -684,7 +671,7 @@ void apu_write(uint32 address, uint8 value)
       ** for the 6502 code to do a couple of table dereferences and load up 
       ** the other triregs
       */
-      apu.triangle.write_latency = (int) (228 / apu.cycle_rate);
+      apu.triangle.write_latency = (int)(228 / apu.cycle_rate);
       apu.triangle.freq = (((value & 7) << 8) + apu.triangle.regs[1]) + 1;
       apu.triangle.vbl_length = vbl_lut[value >> 3];
       apu.triangle.counter_started = false;
@@ -705,8 +692,8 @@ void apu_write(uint32 address, uint8 value)
       apu.noise.freq = noise_freq[value & 0x0F];
 
 #ifdef REALTIME_NOISE
-      apu.noise.xor_tap = (value & 0x80) ? 0x40: 0x02;
-#else /* !REALTIME_NOISE */
+      apu.noise.xor_tap = (value & 0x80) ? 0x40 : 0x02;
+#else  /* !REALTIME_NOISE */
       /* detect transition from long->short sample */
       if ((value & 0x80) && false == apu.noise.short_sample)
       {
@@ -752,7 +739,7 @@ void apu_write(uint32 address, uint8 value)
 
    case APU_WRE2:
       apu.dmc.regs[2] = value;
-      apu.dmc.cached_addr = 0xC000 + (uint16) (value << 6);
+      apu.dmc.cached_addr = 0xC000 + (uint16)(value << 6);
       break;
 
    case APU_WRE3:
@@ -818,7 +805,7 @@ void apu_write(uint32 address, uint8 value)
    case 0x4009:
    case 0x400D:
       break;
-   
+
    default:
       break;
    }
@@ -863,14 +850,14 @@ uint8 apu_read(uint32 address)
    return value;
 }
 
-#define CLIP_OUTPUT16(out) \
-{ \
-   /*out <<= 1;*/ \
-   if (out > 0x7FFF) \
-      out = 0x7FFF; \
-   else if (out < -0x8000) \
-      out = -0x8000; \
-}
+#define CLIP_OUTPUT16(out)    \
+   {                          \
+      /*out <<= 1;*/          \
+      if (out > 0x7FFF)       \
+         out = 0x7FFF;        \
+      else if (out < -0x8000) \
+         out = -0x8000;       \
+   }
 
 void apu_process(void *buffer, int num_samples)
 {
@@ -884,8 +871,8 @@ void apu_process(void *buffer, int num_samples)
       /* bleh */
       apu.buffer = buffer;
 
-      buf16 = (int16 *) buffer;
-      buf8 = (uint8 *) buffer;
+      buf16 = (int16 *)buffer;
+      buf8 = (uint8 *)buffer;
 
       while (num_samples--)
       {
@@ -925,7 +912,7 @@ void apu_process(void *buffer, int num_samples)
 
          /* signed 16-bit output, unsigned 8-bit */
          if (16 == apu.sample_bits)
-            *buf16++ = (int16) accum;
+            *buf16++ = (int16)accum;
          else
             *buf8++ = (accum >> 8) ^ 0x80;
       }
@@ -966,7 +953,7 @@ void apu_build_luts(int num_samples)
 
    /* triangle wave channel's linear length table */
    for (i = 0; i < 128; i++)
-      trilength_lut[i] = (int) (0.25 * i * num_samples);
+      trilength_lut[i] = (int)(0.25 * i * num_samples);
 
 #ifndef REALTIME_NOISE
    /* generate noise samples */
@@ -985,7 +972,7 @@ void apu_setparams(double base_freq, int sample_rate, int refresh_rate, int samp
       apu.base_freq = APU_BASEFREQ;
    else
       apu.base_freq = base_freq;
-   apu.cycle_rate = (float) (apu.base_freq / sample_rate);
+   apu.cycle_rate = (float)(apu.base_freq / sample_rate);
 
    /* build various lookup tables for apu */
    apu_build_luts(apu.num_samples);

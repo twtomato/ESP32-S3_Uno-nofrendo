@@ -49,7 +49,7 @@ static void map64_hblank(int vblank)
       if (0 == irq.counter--)
       {
          irq.counter = irq.latch;
-       
+
          if (true == irq.enabled)
             nes_irq();
 
@@ -124,33 +124,33 @@ static void map64_write(uint32 address, uint8 value)
          break;
       }
       break;
-   
+
    case 0xA000:
       if (value & 1)
          ppu_mirror(0, 0, 1, 1);
       else
          ppu_mirror(0, 1, 0, 1);
       break;
-   
+
    case 0xC000:
       //irq.counter = value;
       irq.latch = value;
       break;
-   
+
    case 0xC001:
       //irq.latch = value;
       irq.reset = true;
       break;
-   
+
    case 0xE000:
       //irq.counter = irq.latch;
       irq.enabled = false;
       break;
-   
+
    case 0xE001:
       irq.enabled = true;
       break;
-   
+
    default:
 #ifdef NOFRENDO_DEBUG
       log_printf("mapper 64: Wrote $%02X to $%04X", value, address);
@@ -174,23 +174,22 @@ static void map64_init(void)
 }
 
 static map_memwrite map64_memwrite[] =
-{
-   { 0x8000, 0xFFFF, map64_write },
-   {     -1,     -1, NULL }
-};
+    {
+        {0x8000, 0xFFFF, map64_write},
+        {-1, -1, NULL}};
 
 mapintf_t map64_intf =
-{
-   64, /* mapper number */
-   "Tengen RAMBO-1", /* mapper name */
-   map64_init, /* init routine */
-   NULL, /* vblank callback */
-   map64_hblank, /* hblank callback */
-   NULL, /* get state (snss) */
-   NULL, /* set state (snss) */
-   NULL, /* memory read structure */
-   map64_memwrite, /* memory write structure */
-   NULL /* external sound device */
+    {
+        64,               /* mapper number */
+        "Tengen RAMBO-1", /* mapper name */
+        map64_init,       /* init routine */
+        NULL,             /* vblank callback */
+        map64_hblank,     /* hblank callback */
+        NULL,             /* get state (snss) */
+        NULL,             /* set state (snss) */
+        NULL,             /* memory read structure */
+        map64_memwrite,   /* memory write structure */
+        NULL              /* external sound device */
 };
 
 /*

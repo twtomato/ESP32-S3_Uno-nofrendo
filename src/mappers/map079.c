@@ -43,23 +43,22 @@ static void map79_init(void)
 }
 
 static map_memwrite map79_memwrite[] =
-{
-   { 0x4100, 0x5FFF, map79_write }, /* ????? incorrect range ??? */
-   {     -1,     -1, NULL }
-};
+    {
+        {0x4100, 0x5FFF, map79_write}, /* ????? incorrect range ??? */
+        {-1, -1, NULL}};
 
 mapintf_t map79_intf =
-{
-   79, /* mapper number */
-   "NINA-03/06", /* mapper name */
-   map79_init, /* init routine */
-   NULL, /* vblank callback */
-   NULL, /* hblank callback */
-   NULL, /* get state (snss) */
-   NULL, /* set state (snss) */
-   NULL, /* memory read structure */
-   map79_memwrite, /* memory write structure */
-   NULL /* external sound device */
+    {
+        79,             /* mapper number */
+        "NINA-03/06",   /* mapper name */
+        map79_init,     /* init routine */
+        NULL,           /* vblank callback */
+        NULL,           /* hblank callback */
+        NULL,           /* get state (snss) */
+        NULL,           /* set state (snss) */
+        NULL,           /* memory read structure */
+        map79_memwrite, /* memory write structure */
+        NULL            /* external sound device */
 };
 
 /*

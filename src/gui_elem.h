@@ -40,8 +40,8 @@ typedef struct font_s
 
 extern font_t small;
 
-#define  CURSOR_WIDTH   11
-#define  CURSOR_HEIGHT  19
+#define CURSOR_WIDTH 11
+#define CURSOR_HEIGHT 19
 
 extern const uint8 cursor_color[];
 extern const uint8 cursor[];

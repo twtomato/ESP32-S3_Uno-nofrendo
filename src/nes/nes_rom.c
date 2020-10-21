@@ -38,47 +38,44 @@
 #include <osd.h>
 
 /* Max length for displayed filename */
-#define  ROM_DISP_MAXLEN   20
-
+#define ROM_DISP_MAXLEN 20
 
 #ifdef ZLIB
 #include <zlib.h>
-#define  _fopen            gzopen
-#define  _fclose           gzclose
-#define  _fread(B,N,L,F)   gzread((F),(B),(L)*(N))
+#define _fopen gzopen
+#define _fclose gzclose
+#define _fread(B, N, L, F) gzread((F), (B), (L) * (N))
 #else
-#define  _fopen            fopen
-#define  _fclose           fclose
-#define  _fread(B,N,L,F)   fread((B),(N),(L),(F))
+#define _fopen fopen
+#define _fclose fclose
+#define _fread(B, N, L, F) fread((B), (N), (L), (F))
 #endif
 
-#define  ROM_FOURSCREEN    0x08
-#define  ROM_TRAINER       0x04
-#define  ROM_BATTERY       0x02
-#define  ROM_MIRRORTYPE    0x01
-#define  ROM_INES_MAGIC    "NES\x1A"
-
+#define ROM_FOURSCREEN 0x08
+#define ROM_TRAINER 0x04
+#define ROM_BATTERY 0x02
+#define ROM_MIRRORTYPE 0x01
+#define ROM_INES_MAGIC "NES\x1A"
 
 typedef struct inesheader_s
 {
-   uint8 ines_magic[4]     __PACKED__;
-   uint8 rom_banks         __PACKED__;
-   uint8 vrom_banks        __PACKED__;
-   uint8 rom_type          __PACKED__;
-   uint8 mapper_hinybble   __PACKED__;
-   uint8 reserved[8]       __PACKED__;
+   uint8 ines_magic[4] __PACKED__;
+   uint8 rom_banks __PACKED__;
+   uint8 vrom_banks __PACKED__;
+   uint8 rom_type __PACKED__;
+   uint8 mapper_hinybble __PACKED__;
+   uint8 reserved[8] __PACKED__;
 } inesheader_t;
 
+#define TRAINER_OFFSET 0x1000
+#define TRAINER_LENGTH 0x200
+#define VRAM_LENGTH 0x2000
 
-#define  TRAINER_OFFSET    0x1000
-#define  TRAINER_LENGTH    0x200
-#define  VRAM_LENGTH       0x2000
+#define ROM_BANK_LENGTH 0x4000
+#define VROM_BANK_LENGTH 0x2000
 
-#define  ROM_BANK_LENGTH   0x4000
-#define  VROM_BANK_LENGTH  0x2000
-
-#define  SRAM_BANK_LENGTH  0x0400
-#define  VRAM_BANK_LENGTH  0x2000
+#define SRAM_BANK_LENGTH 0x0400
+#define VRAM_BANK_LENGTH 0x2000
 
 /* Save battery-backed RAM */
 static void rom_savesram(rominfo_t *rominfo)
@@ -256,7 +253,7 @@ static FILE *rom_findrom(const char *filename, rominfo_t *rominfo)
 static int rom_adddirty(char *filename)
 {
 #ifdef NOFRENDO_DEBUG
-#define  MAX_BUFFER_LENGTH    255
+#define MAX_BUFFER_LENGTH 255
    char buffer[MAX_BUFFER_LENGTH + 1];
    bool found = false;
 
@@ -311,7 +308,7 @@ int rom_checkmagic(const char *filename)
 
 static int rom_getheader(FILE *fp, rominfo_t *rominfo)
 {
-#define  RESERVED_LENGTH   8
+#define RESERVED_LENGTH 8
    inesheader_t head;
    uint8 reserved[RESERVED_LENGTH];
    bool header_dirty;
@@ -403,7 +400,7 @@ char *rom_getinfo(rominfo_t *rominfo)
    sprintf(temp, " [%d] %dk/%dk %c", rominfo->mapper_number,
            rominfo->rom_banks * 16, rominfo->vrom_banks * 8,
            (rominfo->mirror == MIRROR_VERT) ? 'V' : 'H');
-   
+
    /* Stick it on there! */
    strncat(info, temp, PATH_MAX - strlen(info));
 

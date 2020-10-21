@@ -28,7 +28,7 @@
 
 /* GUI colors - the last 64 of a 256-color palette */
 
-#define  GUI_FIRSTENTRY 192
+#define GUI_FIRSTENTRY 192
 
 enum
 {
@@ -49,13 +49,13 @@ enum
    GUI_LASTENTRY
 };
 
-#define  GUI_TOTALCOLORS   (GUI_LASTENTRY - GUI_FIRSTENTRY)
+#define GUI_TOTALCOLORS (GUI_LASTENTRY - GUI_FIRSTENTRY)
 
 /* TODO: bleh */
 #include <bitmap.h>
 extern rgb_t gui_pal[GUI_TOTALCOLORS];
 
-#define  MAX_MSG_LENGTH 256
+#define MAX_MSG_LENGTH 256
 
 typedef struct message_s
 {
@@ -89,7 +89,6 @@ extern void gui_togglefs(void);
 extern void gui_displayinfo();
 extern void gui_toggle_chan(int chan);
 extern void gui_setfilter(int filter_type);
-
 
 #endif /* _GUI_H_ */
 

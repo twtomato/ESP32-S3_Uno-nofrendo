@@ -30,7 +30,6 @@
 
 extern apuext_t fds_ext;
 
-
 #endif /* _VRCVISND_H_ */
 
 /*

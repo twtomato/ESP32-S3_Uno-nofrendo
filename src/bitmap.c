@@ -33,7 +33,7 @@ void bmp_clear(const bitmap_t *bitmap, uint8 color)
    memset(bitmap->data, color, bitmap->pitch * bitmap->height);
 }
 
-static bitmap_t *_make_bitmap(uint8 *data_addr, bool hw, int width, 
+static bitmap_t *_make_bitmap(uint8 *data_addr, bool hw, int width,
                               int height, int pitch, int overdraw)
 {
    bitmap_t *bitmap;
@@ -61,10 +61,10 @@ static bitmap_t *_make_bitmap(uint8 *data_addr, bool hw, int width,
    if (false == bitmap->hardware)
    {
       bitmap->pitch = (bitmap->pitch + 3) & ~3;
-      bitmap->line[0] = (uint8 *) (((uint32) bitmap->data + overdraw + 3) & ~3);
+      bitmap->line[0] = (uint8 *)(((uint32)bitmap->data + overdraw + 3) & ~3);
    }
    else
-   { 
+   {
       bitmap->line[0] = bitmap->data + overdraw;
    }
 
