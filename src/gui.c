@@ -584,9 +584,9 @@ void gui_sendmsg(int color, char *format, ...)
    vsprintf(msg.text, format, arg);
 
 #ifdef NOFRENDO_DEBUG
-   log_print("GUI: ");
-   log_print(msg.text);
-   log_print("\n");
+   nofrendo_log_print("GUI: ");
+   nofrendo_log_print(msg.text);
+   nofrendo_log_print("\n");
 #endif /* NOFRENDO_DEBUG */
 
    va_end(arg);

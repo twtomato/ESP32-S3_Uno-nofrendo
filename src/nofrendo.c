@@ -163,7 +163,7 @@ static int internal_insert(const char *filename, system_t type)
       console.machine.nes = nes_create();
       if (NULL == console.machine.nes)
       {
-         log_printf("Failed to create NES instance.\n");
+         nofrendo_log_printf("Failed to create NES instance.\n");
          return -1;
       }
 
@@ -180,7 +180,7 @@ static int internal_insert(const char *filename, system_t type)
 
    case system_unknown:
    default:
-      log_printf("system type unknown, playing nofrendo NES intro.\n");
+      nofrendo_log_printf("system type unknown, playing nofrendo NES intro.\n");
       if (NULL != console.filename)
          free(console.filename);
 
