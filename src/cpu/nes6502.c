@@ -1321,9 +1321,9 @@ uint32 nes6502_getcycles(bool reset_flag)
 #define OPCODE_BEGIN(xx) op##xx:
 #ifdef NES6502_DISASM
 
-#define OPCODE_END                                              \
-   if (remaining_cycles <= 0)                                   \
-      goto end_execute;                                         \
+#define OPCODE_END                                                       \
+   if (remaining_cycles <= 0)                                            \
+      goto end_execute;                                                  \
    nofrendo_log_printf(nes6502_disasm(PC, COMBINE_FLAGS(), A, X, Y, S)); \
    goto *opcode_table[bank_readbyte(PC++)];
 
