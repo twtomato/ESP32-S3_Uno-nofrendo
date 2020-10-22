@@ -45,7 +45,7 @@ typedef struct memblock_s
 } memblock_t;
 
 /* debugging flag */
-bool mem_debug = true;
+bool mem_debug = NOFRENDO_MEM_DEBUG;
 
 #ifdef NOFRENDO_DEBUG
 
