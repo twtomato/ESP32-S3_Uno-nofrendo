@@ -348,8 +348,8 @@ static void system_video(bool draw)
       return;
    }
 
-   /* blit the NES screen to our video surface */
 #ifdef NOFRENDO_DOUBLE_FRAMEBUFFER
+   /* blit the NES screen to our video surface */
    vid_blit(nes.vidbuf, 0, (NES_SCREEN_HEIGHT - NES_VISIBLE_HEIGHT) / 2,
             0, 0, NES_SCREEN_WIDTH, NES_VISIBLE_HEIGHT);
 #endif /* NOFRENDO_DOUBLE_FRAMEBUFFER */
@@ -445,9 +445,11 @@ void nes_destroy(nes_t **machine)
       mmc_destroy(&(*machine)->mmc);
       ppu_destroy(&(*machine)->ppu);
       apu_destroy(&(*machine)->apu);
+
 #ifdef NOFRENDO_DOUBLE_FRAMEBUFFER
       bmp_destroy(&(*machine)->vidbuf);
 #endif /* NOFRENDO_DOUBLE_FRAMEBUFFER */
+
       if ((*machine)->cpu)
       {
          if ((*machine)->cpu->mem_page[0])
