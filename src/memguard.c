@@ -25,17 +25,11 @@
 ** $Id: memguard.c,v 1.2 2001/04/27 14:37:11 neil Exp $
 */
 
-#include "noftypes.h"
-#include "memguard.h"
-
-/* undefine macro definitions, so we get real calls */
-#undef malloc
-#undef free
-#undef strdup
-
 #include <string.h>
 #include <stdlib.h>
 
+#include "noftypes.h"
+#include "memguard.h"
 #include "log.h"
 
 /* Maximum number of allocated blocks at any one time */
@@ -74,7 +68,8 @@ static int mem_checkguardblock(void *data, int guard_size)
    block = ((char *)data) - guard_size;
 
    /* get the size */
-   alloc_size = *((uint32 *)block)++;
+   alloc_size = *((uint32 *)block);
+   block += 4;
 
    /* check leading guard string */
    check = GUARD_STRING;
@@ -124,7 +119,8 @@ static void *mem_guardalloc(int alloc_size, int guard_size)
    alloc_size = (alloc_size + 3) & ~3;
 
    /* allocate memory */
-   orig = malloc(alloc_size + (guard_size * 2));
+   // orig = malloc(alloc_size + (guard_size * 2));
+   orig = mem_alloc(alloc_size + (guard_size * 2), true);
    if (NULL == orig)
       return NULL;
 
@@ -139,7 +135,8 @@ static void *mem_guardalloc(int alloc_size, int guard_size)
       *ptr++ = 0xDEADBEEF;
 
    /* store the size of the newly allocated block*/
-   *((uint32 *)block)++ = alloc_size;
+   *((uint32 *)block) = alloc_size;
+   block += 4;
 
    /* put guard string at beginning of block */
    check = GUARD_STRING;
@@ -184,7 +181,9 @@ static void mem_init(void)
 
    mem_blockcount = 0;
 
-   mem_record = malloc(MAX_BLOCKS * sizeof(memblock_t));
+   // mem_record = malloc(MAX_BLOCKS * sizeof(memblock_t));
+   mem_record = mem_alloc(MAX_BLOCKS * sizeof(memblock_t), false);
+
    ASSERT(mem_record);
    memset(mem_record, 0, MAX_BLOCKS * sizeof(memblock_t));
 }
@@ -252,8 +251,10 @@ void *_my_malloc(int size, char *file, int line)
    if (false != mem_debug)
       temp = mem_guardalloc(size, GUARD_LENGTH);
    else
-      temp = malloc(size);
+      // temp = malloc(size);
+      temp = mem_alloc(size, true);
 
+   nofrendo_log_printf("MALLOC_CAP_8BIT malloc: %d at %s:%d\n", size, file, line);
    if (NULL == temp)
    {
       sprintf(fail, "malloc: out of memory at line %d of %s.  block size: %d\n",
@@ -326,7 +327,8 @@ void *_my_malloc(int size)
    void *temp;
    char fail[256];
 
-   temp = malloc(size);
+   // temp = malloc(size);
+   temp = mem_alloc(size, true);
 
    if (NULL == temp)
    {
@@ -383,20 +385,20 @@ void mem_checkleaks(void)
    if (mem_blockcount)
    {
       nofrendo_log_printf("memory leak - %d unfreed block%s\n\n", mem_blockcount,
-                 mem_blockcount == 1 ? "" : "s");
+                          mem_blockcount == 1 ? "" : "s");
 
       for (i = 0; i < MAX_BLOCKS; i++)
       {
          if (mem_record[i].block_addr)
          {
             nofrendo_log_printf("addr: 0x%08X, size: %d, line %d of %s%s\n",
-                       (uint32)mem_record[i].block_addr,
-                       mem_record[i].block_size,
-                       mem_record[i].line_num,
-                       mem_record[i].file_name,
-                       (mem_checkguardblock(mem_record[i].block_addr, GUARD_LENGTH))
-                           ? " -- block corrupt"
-                           : "");
+                                (uint32)mem_record[i].block_addr,
+                                mem_record[i].block_size,
+                                mem_record[i].line_num,
+                                mem_record[i].file_name,
+                                (mem_checkguardblock(mem_record[i].block_addr, GUARD_LENGTH))
+                                    ? " -- block corrupt"
+                                    : "");
          }
       }
    }
@@ -420,10 +422,10 @@ void mem_checkblocks(void)
          if (mem_checkguardblock(mem_record[i].block_addr, GUARD_LENGTH))
          {
             nofrendo_log_printf("addr: 0x%08X, size: %d, line %d of %s -- block corrupt\n",
-                       (uint32)mem_record[i].block_addr,
-                       mem_record[i].block_size,
-                       mem_record[i].line_num,
-                       mem_record[i].file_name);
+                                (uint32)mem_record[i].block_addr,
+                                mem_record[i].block_size,
+                                mem_record[i].line_num,
+                                mem_record[i].file_name);
          }
       }
    }

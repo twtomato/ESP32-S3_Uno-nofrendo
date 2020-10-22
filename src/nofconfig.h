@@ -8,6 +8,8 @@
 #ifndef _NOFCONFIG_H_
 #define _NOFCONFIG_H_
 
+#include <stdbool.h>
+
 #ifndef CONFIG_FILE
 #define CONFIG_FILE "nofrendo.cfg"
 #endif

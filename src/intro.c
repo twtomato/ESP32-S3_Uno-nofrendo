@@ -4468,7 +4468,7 @@ static uint8 *intro_getvrom(void)
 {
    uint8 *vrom;
 
-   vrom = malloc(VROM_SIZE);
+   vrom = NOFRENDO_MALLOC(VROM_SIZE);
    if (NULL != vrom)
    {
       memcpy(vrom, intro_vrom, sizeof(intro_vrom));

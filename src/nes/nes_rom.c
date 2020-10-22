@@ -60,13 +60,13 @@
 
 typedef struct inesheader_s
 {
-   uint8 ines_magic[4] __PACKED__;
-   uint8 rom_banks __PACKED__;
-   uint8 vrom_banks __PACKED__;
-   uint8 rom_type __PACKED__;
-   uint8 mapper_hinybble __PACKED__;
-   uint8 reserved[8] __PACKED__;
-} inesheader_t;
+   uint8 ines_magic[4];
+   uint8 rom_banks;
+   uint8 vrom_banks;
+   uint8 rom_type;
+   uint8 mapper_hinybble;
+   uint8 reserved[8];
+} __attribute__((packed)) inesheader_t;
 
 #define TRAINER_OFFSET 0x1000
 #define TRAINER_LENGTH 0x200
@@ -128,7 +128,7 @@ static void rom_loadsram(rominfo_t *rominfo)
 static int rom_allocsram(rominfo_t *rominfo)
 {
    /* Load up SRAM */
-   rominfo->sram = malloc(SRAM_BANK_LENGTH * rominfo->sram_banks);
+   rominfo->sram = NOFRENDO_MALLOC(SRAM_BANK_LENGTH * rominfo->sram_banks);
    if (NULL == rominfo->sram)
    {
       gui_sendmsg(GUI_RED, "Could not allocate space for battery RAM");
@@ -159,7 +159,8 @@ static int rom_loadrom(FILE *fp, rominfo_t *rominfo)
    ASSERT(rominfo);
 
    /* Allocate ROM space, and load it up! */
-   rominfo->rom = malloc((rominfo->rom_banks * ROM_BANK_LENGTH));
+   // rominfo->rom = malloc(rominfo->rom_banks * ROM_BANK_LENGTH);
+   rominfo->rom = mem_alloc(rominfo->rom_banks * ROM_BANK_LENGTH, false);
    if (NULL == rominfo->rom)
    {
       gui_sendmsg(GUI_RED, "Could not allocate space for ROM image");
@@ -170,7 +171,8 @@ static int rom_loadrom(FILE *fp, rominfo_t *rominfo)
    /* If there's VROM, allocate and stuff it in */
    if (rominfo->vrom_banks)
    {
-      rominfo->vrom = malloc((rominfo->vrom_banks * VROM_BANK_LENGTH));
+      // rominfo->vrom = malloc((rominfo->vrom_banks * VROM_BANK_LENGTH));
+      rominfo->vrom = mem_alloc(rominfo->vrom_banks * VROM_BANK_LENGTH, false);
       if (NULL == rominfo->vrom)
       {
          gui_sendmsg(GUI_RED, "Could not allocate space for VROM");
@@ -180,7 +182,7 @@ static int rom_loadrom(FILE *fp, rominfo_t *rominfo)
    }
    else
    {
-      rominfo->vram = malloc(VRAM_LENGTH);
+      rominfo->vram = NOFRENDO_MALLOC(VRAM_LENGTH);
       if (NULL == rominfo->vram)
       {
          gui_sendmsg(GUI_RED, "Could not allocate space for VRAM");
@@ -318,7 +320,7 @@ static int rom_getheader(FILE *fp, rominfo_t *rominfo)
    ASSERT(rominfo);
 
    /* Read in the header */
-   _fread(&head, 1, sizeof(head), fp);
+   _fread(&head, sizeof(head), 1, fp);
 
    if (memcmp(head.ines_magic, ROM_INES_MAGIC, 4))
    {
@@ -421,7 +423,7 @@ rominfo_t *rom_load(const char *filename)
    FILE *fp;
    rominfo_t *rominfo;
 
-   rominfo = malloc(sizeof(rominfo_t));
+   rominfo = NOFRENDO_MALLOC(sizeof(rominfo_t));
    if (NULL == rominfo)
       return NULL;
 
@@ -503,15 +505,15 @@ void rom_free(rominfo_t **rominfo)
    rom_savesram(*rominfo);
 
    if ((*rominfo)->sram)
-      free((*rominfo)->sram);
+      NOFRENDO_FREE((*rominfo)->sram);
    if ((*rominfo)->rom)
-      free((*rominfo)->rom);
+      NOFRENDO_FREE((*rominfo)->rom);
    if ((*rominfo)->vrom)
-      free((*rominfo)->vrom);
+      NOFRENDO_FREE((*rominfo)->vrom);
    if ((*rominfo)->vram)
-      free((*rominfo)->vram);
+      NOFRENDO_FREE((*rominfo)->vram);
 
-   free(*rominfo);
+   NOFRENDO_FREE(*rominfo);
 
    gui_sendmsg(GUI_GREEN, "ROM freed");
 }

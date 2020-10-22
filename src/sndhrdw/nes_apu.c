@@ -987,7 +987,7 @@ apu_t *apu_create(double base_freq, int sample_rate, int refresh_rate, int sampl
    apu_t *temp_apu;
    int channel;
 
-   temp_apu = malloc(sizeof(apu_t));
+   temp_apu = NOFRENDO_MALLOC(sizeof(apu_t));
    if (NULL == temp_apu)
       return NULL;
 
@@ -1021,7 +1021,7 @@ void apu_destroy(apu_t **src_apu)
    {
       if ((*src_apu)->ext && NULL != (*src_apu)->ext->shutdown)
          (*src_apu)->ext->shutdown();
-      free(*src_apu);
+      NOFRENDO_FREE(*src_apu);
       *src_apu = NULL;
    }
 }

@@ -26,6 +26,8 @@
 #ifndef _NOFTYPES_H_
 #define _NOFTYPES_H_
 
+#include <stdbool.h>
+
 /* Define this if running on little-endian (x86) systems */
 #define HOST_LITTLE_ENDIAN
 
@@ -49,18 +51,6 @@ typedef signed int int32;
 typedef unsigned char uint8;
 typedef unsigned short uint16;
 typedef unsigned int uint32;
-
-#ifndef __cplusplus
-typedef enum
-{
-   false = 0,
-   true = 1
-} bool;
-
-#ifndef NULL
-#define NULL ((void *)0)
-#endif
-#endif /* !__cplusplus */
 
 #include "memguard.h"
 #include "log.h"
