@@ -31,6 +31,7 @@
 #define NOFRENDO_DEBUG
 #define NOFRENDO_MEM_DEBUG true
 // #define NOFRENDO_DOUBLE_FRAMEBUFFER
+// #define NOFRENDO_LOG_TO_FILE
 
 /* Define this if running on little-endian (x86) systems */
 #define HOST_LITTLE_ENDIAN

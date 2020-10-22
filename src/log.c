@@ -30,16 +30,21 @@
 #include "noftypes.h"
 #include "log.h"
 
+#ifdef NOFRENDO_LOG_TO_FILE
 static FILE *errorlog = NULL;
+#endif /* NOFRENDO_LOG_TO_FILE */
+
 static int (*log_func)(const char *string) = NULL;
 
 /* first up: debug versions of calls */
 #ifdef NOFRENDO_DEBUG
 int log_init(void)
 {
+#ifdef NOFRENDO_LOG_TO_FILE
    errorlog = fopen("errorlog.txt", "wt");
    if (NULL == errorlog)
       return (-1);
+#endif /* NOFRENDO_LOG_TO_FILE */
 
    return 0;
 }
@@ -51,8 +56,10 @@ void log_shutdown(void)
    mem_checkleaks();
    mem_cleanup();
 
+#ifdef NOFRENDO_LOG_TO_FILE
    if (NULL != errorlog)
       fclose(errorlog);
+#endif /* NOFRENDO_LOG_TO_FILE */
 }
 
 int nofrendo_log_print(const char *string)
@@ -61,8 +68,10 @@ int nofrendo_log_print(const char *string)
    if (NULL != log_func)
       log_func(string);
 
+#ifdef NOFRENDO_LOG_TO_FILE
    /* Log it to disk, as well */
    fputs(string, errorlog);
+#endif /* NOFRENDO_LOG_TO_FILE */
 
    return 0;
 }
@@ -81,7 +90,10 @@ int nofrendo_log_printf(const char *format, ...)
       log_func(buffer);
    }
 
+#ifdef NOFRENDO_LOG_TO_FILE
    vfprintf(errorlog, format, arg);
+#endif /* NOFRENDO_LOG_TO_FILE */
+
    va_end(arg);
 
    return 0; /* should be number of chars written */
