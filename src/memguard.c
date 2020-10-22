@@ -254,7 +254,7 @@ void *_my_malloc(int size, char *file, int line)
       // temp = malloc(size);
       temp = mem_alloc(size, true);
 
-   nofrendo_log_printf("MALLOC_CAP_8BIT malloc: %d at %s:%d\n", size, file, line);
+   nofrendo_log_printf("_my_malloc: %d at %s:%d\n", size, file, line);
    if (NULL == temp)
    {
       sprintf(fail, "malloc: out of memory at line %d of %s.  block size: %d\n",
