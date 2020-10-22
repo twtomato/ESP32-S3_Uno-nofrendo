@@ -200,7 +200,7 @@ void main_insert(const char *filename, system_t type)
    main_eject();
 }
 
-int main(int argc, char *argv[])
+int nofrendo_main(int argc, char *argv[])
 {
    /* initialize our system structure */
    console.filename = NULL;
