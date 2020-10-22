@@ -170,7 +170,7 @@ static int internal_insert(const char *filename, system_t type)
       if (nes_insertcart(console.filename, console.machine.nes))
          return -1;
 
-      vid_setmode(NES_SCREEN_WIDTH, NES_VISIBLE_HEIGHT);
+      vid_setmode(NES_SCREEN_WIDTH, NES_SCREEN_HEIGHT);
 
       if (install_timer(NES_REFRESH_RATE))
          return -1;
@@ -224,7 +224,7 @@ int main_loop(const char *filename, system_t type)
    vidinfo_t video;
 
    /* register shutdown, in case of assertions, etc. */
-   atexit(shutdown_everything);
+     atexit(shutdown_everything);
 
    if (config.open())
       return -1;

@@ -371,7 +371,7 @@ uint8 ppu_read(uint32 address)
       {
          ppu.vdata_latch = 0xFF;
          nofrendo_log_printf("VRAM read at $%04X, scanline %d\n",
-                             ppu.vaddr, nes_getcontextptr()->scanline);
+                    ppu.vaddr, nes_getcontextptr()->scanline);
       }
       else
       {
@@ -1069,7 +1069,7 @@ void ppu_checknmi(void)
 
 void ppu_scanline(bitmap_t *bmp, int scanline, bool draw_flag)
 {
-   if (scanline < 240)
+   if (scanline < NES_SCREEN_HEIGHT)
    {
       /* Lower the Max Sprite per scanline flag */
       ppu.stat &= ~PPU_STATF_MAXSPRITE;
