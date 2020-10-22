@@ -69,7 +69,9 @@ typedef struct nes_s
    rominfo_t *rominfo;
 
    /* video buffer */
+#ifdef NOFRENDO_DOUBLE_FRAMEBUFFER
    bitmap_t *vidbuf;
+#endif /* NOFRENDO_DOUBLE_FRAMEBUFFER */
 
    bool fiq_occurred;
    uint8 fiq_state;

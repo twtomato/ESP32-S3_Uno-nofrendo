@@ -36,7 +36,11 @@
 static bitmap_t *screen = NULL;
 
 /* primary / backbuffer surfaces */
+#ifdef NOFRENDO_DOUBLE_FRAMEBUFFER
 static bitmap_t *primary_buffer = NULL, *back_buffer = NULL;
+#else /* !NOFRENDO_DOUBLE_FRAMEBUFFER */
+static bitmap_t *primary_buffer = NULL;
+#endif /* !NOFRENDO_DOUBLE_FRAMEBUFFER */
 
 static viddriver_t *driver = NULL;
 
@@ -383,10 +387,12 @@ void vid_flush(void)
    else
       vid_blitscreen(num_dirties, dirty_rects);
 
+#ifdef NOFRENDO_DOUBLE_FRAMEBUFFER
    /* Swap pointers to the main/back buffers */
    temp = back_buffer;
    back_buffer = primary_buffer;
    primary_buffer = temp;
+#endif /* NOFRENDO_DOUBLE_FRAMEBUFFER */
 }
 
 /* emulated machine tells us which resolution it wants */
@@ -394,13 +400,16 @@ int vid_setmode(int width, int height)
 {
    if (NULL != primary_buffer)
       bmp_destroy(&primary_buffer);
+#ifdef NOFRENDO_DOUBLE_FRAMEBUFFER
    if (NULL != back_buffer)
       bmp_destroy(&back_buffer);
+#endif /* NOFRENDO_DOUBLE_FRAMEBUFFER */
 
    primary_buffer = bmp_create(width, height, 0); /* no overdraw */
    if (NULL == primary_buffer)
       return -1;
 
+#ifdef NOFRENDO_DOUBLE_FRAMEBUFFER
    /* Create our backbuffer */
    back_buffer = bmp_create(width, height, 0); /* no overdraw */
    if (NULL == back_buffer)
@@ -408,9 +417,13 @@ int vid_setmode(int width, int height)
       bmp_destroy(&primary_buffer);
       return -1;
    }
+#endif /* NOFRENDO_DOUBLE_FRAMEBUFFER */
 
    bmp_clear(primary_buffer, GUI_BLACK);
+
+#ifdef NOFRENDO_DOUBLE_FRAMEBUFFER
    bmp_clear(back_buffer, GUI_BLACK);
+#endif /* NOFRENDO_DOUBLE_FRAMEBUFFER */
 
    return 0;
 }
@@ -440,7 +453,7 @@ static int vid_findmode(int width, int height, viddriver_t *osd_driver)
       driver->free_write(-1, NULL);
 
    nofrendo_log_printf("video driver: %s at %dx%d\n", driver->name,
-              screen->width, screen->height);
+                       screen->width, screen->height);
 
    return 0;
 }
@@ -451,7 +464,7 @@ int vid_init(int width, int height, viddriver_t *osd_driver)
    if (vid_findmode(width, height, osd_driver))
    {
       nofrendo_log_printf("video initialization failed for %s at %dx%d\n",
-                 osd_driver->name, width, height);
+                          osd_driver->name, width, height);
       return -1;
    }
 
@@ -465,8 +478,11 @@ void vid_shutdown(void)
 
    if (NULL != primary_buffer)
       bmp_destroy(&primary_buffer);
+
+#ifdef NOFRENDO_DOUBLE_FRAMEBUFFER
    if (NULL != back_buffer)
       bmp_destroy(&back_buffer);
+#endif /* NOFRENDO_DOUBLE_FRAMEBUFFER */
 
    if (driver && driver->shutdown)
       driver->shutdown();
