@@ -28,6 +28,8 @@
 
 #include <stdbool.h>
 
+#include "noftypes.h"
+
 #ifdef NOFRENDO_DEBUG
 
 #define NOFRENDO_MALLOC(s) _my_malloc((s), __FILE__, __LINE__)
