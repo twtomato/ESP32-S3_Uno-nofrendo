@@ -25,18 +25,19 @@
 
 #include <string.h>
 #include <stdlib.h>
-#include <noftypes.h>
-#include <nes_ppu.h>
-#include <nes.h>
-#include <gui.h>
-#include "nes6502.h"
-#include <log.h>
-#include <nes_mmc.h>
 
-#include <bitmap.h>
-#include <vid_drv.h>
-#include <nes_pal.h>
-#include <nesinput.h>
+#include "../noftypes.h"
+#include "nes_ppu.h"
+#include "nes.h"
+#include "../gui.h"
+#include "../cpu/nes6502.h"
+#include "../log.h"
+#include "nes_mmc.h"
+
+#include "../bitmap.h"
+#include "../vid_drv.h"
+#include "nes_pal.h"
+#include "nesinput.h"
 
 /* PPU access */
 #define PPU_MEM(x) ppu.page[(x) >> 10][(x)]

@@ -26,13 +26,13 @@
 #ifndef _NES_H_
 #define _NES_H_
 
-#include <noftypes.h>
-#include <nes_apu.h>
-#include <nes_mmc.h>
-#include <nes_ppu.h>
-#include <nes_rom.h>
-#include "nes6502.h"
-#include <bitmap.h>
+#include "../noftypes.h"
+#include "../sndhrdw/nes_apu.h"
+#include "nes_mmc.h"
+#include "nes_ppu.h"
+#include "nes_rom.h"
+#include "../cpu/nes6502.h"
+#include "../bitmap.h"
 
 /* Visible (NTSC) screen height */
 #ifndef NES_VISIBLE_HEIGHT

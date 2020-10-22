@@ -25,8 +25,9 @@
 
 #include <string.h>
 #include <stdlib.h>
-#include <noftypes.h>
-#include <intro.h>
+
+#include "noftypes.h"
+#include "intro.h"
 
 #define CODE_SIZE 0x4000
 #define VROM_SIZE 0x2000
@@ -4447,7 +4448,7 @@ static uint8 *intro_getrom(void)
 {
    uint8 *rom;
 
-   rom = malloc(CODE_SIZE);
+   rom = NOFRENDO_MALLOC(CODE_SIZE);
    if (NULL != rom)
    {
       /* good measure */

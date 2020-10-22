@@ -24,12 +24,13 @@
 */
 
 #include <string.h>
-#include <noftypes.h>
-#include <log.h>
-#include <bitmap.h>
-#include <vid_drv.h>
-#include <gui.h>
-#include <osd.h>
+
+#include "noftypes.h"
+#include "log.h"
+#include "bitmap.h"
+#include "vid_drv.h"
+#include "gui.h"
+#include "osd.h"
 
 /* hardware surface */
 static bitmap_t *screen = NULL;

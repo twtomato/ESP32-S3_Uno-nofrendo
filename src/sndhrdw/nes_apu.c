@@ -24,10 +24,11 @@
 */
 
 #include <string.h>
-#include <noftypes.h>
-#include <log.h>
-#include <nes_apu.h>
-#include "nes6502.h"
+
+#include "../noftypes.h"
+#include "../log.h"
+#include "nes_apu.h"
+#include "../cpu/nes6502.h"
 
 #define APU_OVERSAMPLE
 #define APU_VOLUME_DECAY(x) ((x) -= ((x) >> 7))

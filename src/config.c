@@ -8,11 +8,11 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-#include <noftypes.h>
-#include <log.h>
-#include <osd.h>
-#include <nofconfig.h>
-#include <version.h>
+#include "noftypes.h"
+#include "log.h"
+#include "osd.h"
+#include "nofconfig.h"
+#include "version.h"
 
 typedef struct myvar_s
 {

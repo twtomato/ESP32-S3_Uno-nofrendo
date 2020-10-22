@@ -26,18 +26,19 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
-#include <noftypes.h>
-#include "nes6502.h"
-#include <log.h>
-#include <osd.h>
-#include <gui.h>
-#include <nes.h>
-#include <nes_apu.h>
-#include <nes_ppu.h>
-#include <nes_rom.h>
-#include <nes_mmc.h>
-#include <vid_drv.h>
-#include <nofrendo.h>
+
+#include "../noftypes.h"
+#include "../cpu/nes6502.h"
+#include "../log.h"
+#include "../osd.h"
+#include "../gui.h"
+#include "nes.h"
+#include "../sndhrdw/nes_apu.h"
+#include "nes_ppu.h"
+#include "nes_rom.h"
+#include "nes_mmc.h"
+#include "../vid_drv.h"
+#include "../nofrendo.h"
 
 #define NES_CLOCK_DIVIDER 12
 //#define  NES_MASTER_CLOCK     21477272.727272727272

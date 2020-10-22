@@ -55,8 +55,8 @@
 extern void osd_setsound(void (*playfunc)(void *buffer, int size));
 
 #ifndef NSF_PLAYER
-#include <noftypes.h>
-#include <vid_drv.h>
+#include "noftypes.h"
+#include "vid_drv.h"
 
 typedef struct vidinfo_s
 {

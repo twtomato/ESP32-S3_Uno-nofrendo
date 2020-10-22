@@ -26,17 +26,18 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <noftypes.h>
-#include <nofrendo.h>
-#include <event.h>
-#include <nofconfig.h>
-#include <log.h>
-#include <osd.h>
-#include <gui.h>
-#include <vid_drv.h>
+
+#include "noftypes.h"
+#include "nofrendo.h"
+#include "event.h"
+#include "nofconfig.h"
+#include "log.h"
+#include "osd.h"
+#include "gui.h"
+#include "vid_drv.h"
 
 /* emulated system includes */
-#include <nes.h>
+#include "nes/nes.h"
 
 /* our global machine structure */
 static struct

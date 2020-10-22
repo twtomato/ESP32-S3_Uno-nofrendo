@@ -25,14 +25,15 @@
 
 #include <stdio.h>
 #include <string.h>
-#include <noftypes.h>
-#include <nesstate.h>
-#include <gui.h>
-#include <nes.h>
-#include <log.h>
-#include <osd.h>
-#include <libsnss.h>
-#include "nes6502.h"
+
+#include "../noftypes.h"
+#include "nesstate.h"
+#include "../gui.h"
+#include "nes.h"
+#include "../log.h"
+#include "../osd.h"
+#include "../libsnss/libsnss.h"
+#include "../cpu/nes6502.h"
 
 #define FIRST_STATE_SLOT 0
 #define LAST_STATE_SLOT 9

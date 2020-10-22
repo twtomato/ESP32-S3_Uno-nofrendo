@@ -12,7 +12,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <libsnss.h>
+
+#include "libsnss.h"
 
 /**************************************************************************/
 /* This section deals with endian-specific code. */

@@ -23,10 +23,10 @@
 ** $Id: map064.c,v 1.2 2001/04/27 14:37:11 neil Exp $
 */
 
-#include <noftypes.h>
-#include <nes_mmc.h>
-#include <nes.h>
-#include <log.h>
+#include "../noftypes.h"
+#include "../nes/nes_mmc.h"
+#include "../nes/nes.h"
+#include "../log.h"
 
 static struct
 {
@@ -120,7 +120,7 @@ static void map64_write(uint32 address, uint8 value)
       default:
 #ifdef NOFRENDO_DEBUG
          log_printf("mapper 64: unknown command #%d", command & 0xF);
-#endif
+#endif /* NOFRENDO_DEBUG */
          break;
       }
       break;
@@ -154,7 +154,7 @@ static void map64_write(uint32 address, uint8 value)
    default:
 #ifdef NOFRENDO_DEBUG
       log_printf("mapper 64: Wrote $%02X to $%04X", value, address);
-#endif
+#endif /* NOFRENDO_DEBUG */
       break;
    }
 

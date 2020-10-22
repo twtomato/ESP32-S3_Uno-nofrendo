@@ -25,8 +25,9 @@
 
 #include <stdio.h>
 #include <string.h>
-#include <noftypes.h>
-#include <bitmap.h>
+
+#include "noftypes.h"
+#include "bitmap.h"
 
 void bmp_clear(const bitmap_t *bitmap, uint8 color)
 {
