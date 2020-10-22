@@ -29,9 +29,13 @@
 #include <stdbool.h>
 
 #define NOFRENDO_DEBUG
+// #define NOFRENDO_VRAM_DEBUG
 #define NOFRENDO_MEM_DEBUG true
-// #define NOFRENDO_DOUBLE_FRAMEBUFFER
 // #define NOFRENDO_LOG_TO_FILE
+/* For the ESP32, it costs too much memory to render to a separate buffer and blit that to the main buffer.
+   Instead, the code has been modified to directly grab the primary buffer from the video subsystem and render
+   there, saving us about 64K of memory. */
+// #define NOFRENDO_DOUBLE_FRAMEBUFFER
 
 /* Define this if running on little-endian (x86) systems */
 #define HOST_LITTLE_ENDIAN
