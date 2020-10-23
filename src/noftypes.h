@@ -66,8 +66,8 @@ typedef unsigned int uint32;
 
 #ifdef NOFRENDO_DEBUG
 
-#define ASSERT(expr) log_assert((int)(expr), __LINE__, __FILE__, NULL)
-#define ASSERT_MSG(msg) log_assert(false, __LINE__, __FILE__, (msg))
+#define ASSERT(expr) nofrendo_log_assert((int)(expr), __LINE__, __FILE__, NULL)
+#define ASSERT_MSG(msg) nofrendo_log_assert(false, __LINE__, __FILE__, (msg))
 
 #else /* !NOFRENDO_DEBUG */
 

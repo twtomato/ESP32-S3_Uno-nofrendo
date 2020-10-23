@@ -80,7 +80,7 @@ static void shutdown_everything(void)
    osd_shutdown();
    gui_shutdown();
    vid_shutdown();
-   log_shutdown();
+   nofrendo_log_shutdown();
 }
 
 /* End the current context */
@@ -210,7 +210,7 @@ int nofrendo_main(int argc, char *argv[])
    console.refresh_rate = 0;
    console.quit = false;
 
-   if (log_init())
+   if (nofrendo_log_init())
       return -1;
 
    event_init();

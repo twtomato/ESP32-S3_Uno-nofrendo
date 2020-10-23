@@ -38,7 +38,7 @@ static int (*log_func)(const char *string) = NULL;
 
 /* first up: debug versions of calls */
 #ifdef NOFRENDO_DEBUG
-int log_init(void)
+int nofrendo_log_init(void)
 {
 #ifdef NOFRENDO_LOG_TO_FILE
    errorlog = fopen("errorlog.txt", "wt");
@@ -49,7 +49,7 @@ int log_init(void)
    return 0;
 }
 
-void log_shutdown(void)
+void nofrendo_log_shutdown(void)
 {
    /* Snoop around for unallocated blocks */
    mem_checkblocks();
@@ -101,12 +101,12 @@ int nofrendo_log_printf(const char *format, ...)
 
 #else  /* !NOFRENDO_DEBUG */
 
-int log_init(void)
+int nofrendo_log_init(void)
 {
    return 0;
 }
 
-void log_shutdown(void)
+void nofrendo_log_shutdown(void)
 {
 }
 
@@ -125,12 +125,12 @@ int nofrendo_log_printf(const char *format, ...)
 }
 #endif /* !NOFRENDO_DEBUG */
 
-void log_chain_logfunc(int (*func)(const char *string))
+void nofrendo_log_chain_logfunc(int (*func)(const char *string))
 {
    log_func = func;
 }
 
-void log_assert(int expr, int line, const char *file, char *msg)
+void nofrendo_log_assert(int expr, int line, const char *file, char *msg)
 {
    if (expr)
       return;
