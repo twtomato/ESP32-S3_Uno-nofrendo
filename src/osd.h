@@ -52,6 +52,10 @@
 #define stricmp strcasecmp
 #endif /* !WIN32 && !__DJGPP__ */
 
+/* memory allocation */
+extern void *mem_alloc(int size, bool prefer_fast_memory);
+
+/* audio */
 extern void osd_setsound(void (*playfunc)(void *buffer, int size));
 
 #ifndef NSF_PLAYER
@@ -82,13 +86,13 @@ extern int osd_main(int argc, char *argv[]);
 extern int osd_installtimer(int frequency, void *func, int funcsize,
                             void *counter, int countersize);
 
-/* filename manipulation */
-extern void osd_fullname(char *fullname, const char *shortname);
-extern char *osd_newextension(char *string, char *ext);
-
 /* input */
 extern void osd_getinput(void);
 extern void osd_getmouse(int *x, int *y, int *button);
+
+/* filename manipulation */
+extern void osd_fullname(char *fullname, const char *shortname);
+extern char *osd_newextension(char *string, char *ext);
 
 /* build a filename for a snapshot, return -ve for error */
 extern int osd_makesnapname(char *filename, int len);

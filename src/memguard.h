@@ -59,8 +59,6 @@ extern void mem_checkleaks(void);
 
 extern bool mem_debug;
 
-extern void *mem_alloc(int size, bool prefer_fast_memory);
-
 #endif /* _MEMGUARD_H_ */
 
 /*
