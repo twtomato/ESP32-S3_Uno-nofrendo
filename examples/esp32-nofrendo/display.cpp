@@ -74,7 +74,7 @@ extern "C" void display_init()
         else
         {
             frame_x = 0;
-            frame_x_offset = (NES_SCREEN_WIDTH - frame_width) / 2;
+            frame_x_offset = (NES_SCREEN_WIDTH - w) / 2;
             frame_width = w;
             frame_height = NES_SCREEN_HEIGHT;
             frame_line_pixels = frame_width;
