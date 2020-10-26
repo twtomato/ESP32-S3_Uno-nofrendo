@@ -38,7 +38,7 @@ extern void *mem_alloc(int size, bool prefer_fast_memory)
 /* audio */
 #define DEFAULT_SAMPLERATE 22050
 
-#if defined(HW_ENABLE_AUDIO)
+#if defined(HW_AUDIO)
 
 #define DEFAULT_FRAGSIZE 1024
 static void (*audio_callback)(void *buffer, int length) = NULL;
@@ -50,18 +50,38 @@ static int osd_init_sound(void)
 	audio_frame = NOFRENDO_MALLOC(4 * DEFAULT_FRAGSIZE);
 
 	i2s_config_t cfg = {
+#if defined(HW_AUDIO_EXTDAC)
+		.mode = I2S_MODE_MASTER | I2S_MODE_TX,
+#else  /* !defined(HW_AUDIO_EXTDAC) */
 		.mode = I2S_MODE_MASTER | I2S_MODE_TX | I2S_MODE_DAC_BUILT_IN,
+#endif /* !defined(HW_AUDIO_EXTDAC) */
 		.sample_rate = DEFAULT_SAMPLERATE,
 		.bits_per_sample = I2S_BITS_PER_SAMPLE_16BIT,
 		.channel_format = I2S_CHANNEL_FMT_RIGHT_LEFT,
+#if defined(HW_AUDIO_EXTDAC)
+		.communication_format = I2S_COMM_FORMAT_I2S | I2S_COMM_FORMAT_I2S_MSB,
+#else  /* !defined(HW_AUDIO_EXTDAC) */
 		.communication_format = I2S_COMM_FORMAT_PCM | I2S_COMM_FORMAT_I2S_MSB,
+#endif /* !defined(HW_AUDIO_EXTDAC) */
 		.intr_alloc_flags = ESP_INTR_FLAG_LEVEL1,
 		.dma_buf_count = 6,
 		.dma_buf_len = 512,
-		.use_apll = false};
+		.use_apll = false,
+	};
 	i2s_driver_install(I2S_NUM_0, &cfg, 2, &queue);
+#if defined(HW_AUDIO_EXTDAC)
+	i2s_pin_config_t pins = {
+		.bck_io_num = HW_AUDIO_EXTDAC_BCLK,
+		.ws_io_num = HW_AUDIO_EXTDAC_WCLK,
+		.data_out_num = HW_AUDIO_EXTDAC_DOUT,
+		.data_in_num = I2S_PIN_NO_CHANGE,
+	};
+	i2s_set_pin(I2S_NUM_0, &pins);
+#else  /* !defined(HW_AUDIO_EXTDAC) */
 	i2s_set_pin(I2S_NUM_0, NULL);
 	i2s_set_dac_mode(I2S_DAC_CHANNEL_BOTH_EN);
+#endif /* !defined(HW_AUDIO_EXTDAC) */
+	i2s_zero_dma_buffer(I2S_NUM_0);
 
 	audio_callback = NULL;
 
@@ -89,10 +109,15 @@ static void do_audio_frame()
 		int i = n;
 		while (i--)
 		{
-			// audio_frame[i] = audio_frame[i] + 0x8000;
+#if defined(HW_AUDIO_EXTDAC)
+			int16_t a = (*(--mono_ptr) >> 2);
+			*(--stereo_ptr) = a;
+			*(--stereo_ptr) = a;
+#else  /* !defined(HW_AUDIO_EXTDAC) */
 			int16_t a = (*(--mono_ptr) >> 3);
 			*(--stereo_ptr) = 0x8000 + a;
 			*(--stereo_ptr) = 0x8000 - a;
+#endif /* !defined(HW_AUDIO_EXTDAC) */
 		}
 
 		size_t i2s_bytes_write;
@@ -107,7 +132,7 @@ void osd_setsound(void (*playfunc)(void *buffer, int length))
 	audio_callback = playfunc;
 }
 
-#else /* !defined(HW_ENABLE_AUDIO) */
+#else /* !defined(HW_AUDIO) */
 
 static int osd_init_sound(void)
 {
@@ -126,7 +151,7 @@ void osd_setsound(void (*playfunc)(void *buffer, int length))
 {
 }
 
-#endif /* !defined(HW_ENABLE_AUDIO) */
+#endif /* !defined(HW_AUDIO) */
 
 /* video */
 extern void display_init();
