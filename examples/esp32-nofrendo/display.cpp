@@ -34,19 +34,14 @@ Arduino_ST7789 *gfx = new Arduino_ST7789(bus, -1 /* RST */, 1 /* rotation */, tr
 
 
 /* ST7789 ODROID Compatible pin connection */
-#define TFT_BL 14
-Arduino_ESP32SPI_DMA *bus = new Arduino_ESP32SPI_DMA(21 /* DC */, 5 /* CS */, SCK, MOSI, MISO);
-Arduino_ST7789 *gfx = new Arduino_ST7789(bus, -1 /* RST */, 1 /* rotation */, true /* IPS */);
-
-/* ST7789 on breadboard */
-// #define TFT_BL 32
-// Arduino_ESP32SPI_DMA *bus = new Arduino_ESP32SPI_DMA(27 /* DC */, 5 /* CS */, 18 /* SCK */, 23 /* MOSI */, -1 /* MISO */);
-// Arduino_ST7789 *gfx = new Arduino_ST7789(bus, 33 /* RST */, 3 /* rotation */, true /* IPS */);
+// #define TFT_BL 14
+// Arduino_ESP32SPI_DMA *bus = new Arduino_ESP32SPI_DMA(21 /* DC */, 5 /* CS */, SCK, MOSI, MISO);
+// Arduino_ST7789 *gfx = new Arduino_ST7789(bus, -1 /* RST */, 1 /* rotation */, true /* IPS */);
 
 /* ST7796 on breadboard */
 // #define TFT_BL 32
-// Arduino_ESP32SPI_DMA *bus = new Arduino_ESP32SPI_DMA(27 /* DC */, 5 /* CS */, 18 /* SCK */, 23 /* MOSI */, -1 /* MISO */);
-// Arduino_ST7796 *gfx = new Arduino_ST7796(bus, 33 /* RST */, 3 /* rotation */);
+Arduino_ESP32SPI_DMA *bus = new Arduino_ESP32SPI_DMA(12 /* DC */, 5 /* CS */, 18 /* SCK */, 23 /* MOSI */, -1 /* MISO */);
+Arduino_ST7796 *gfx = new Arduino_ST7796(bus, -1 /* RST */, 3 /* rotation */);
 
 /* ST7796 on LCDKit */
 // #define TFT_BL 23

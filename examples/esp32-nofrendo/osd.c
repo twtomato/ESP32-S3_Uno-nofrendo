@@ -341,7 +341,7 @@ int osd_main(int argc, char *argv[])
 {
 	config.filename = configfilename;
 
-	return main_loop(ROM_FILE, system_autodetect);
+	return main_loop(argv[0], system_autodetect);
 }
 
 //Seemingly, this will be called only once. Should call func with a freq of frequency,
