@@ -16,37 +16,35 @@ extern "C" void controller_init()
   pinMode(HW_CONTROLLER_GPIO_LEFT, INPUT_PULLUP);
   pinMode(HW_CONTROLLER_GPIO_RIGHT, INPUT_PULLUP);
 #endif /* !defined(HW_CONTROLLER_GPIO_ANALOG_JOYSTICK) */
-  pinMode(HW_CONTROLLER_GPIO_X, INPUT_PULLUP);
-  pinMode(HW_CONTROLLER_GPIO_Y, INPUT_PULLUP);
   pinMode(HW_CONTROLLER_GPIO_SELECT, INPUT_PULLUP);
   pinMode(HW_CONTROLLER_GPIO_START, INPUT_PULLUP);
   pinMode(HW_CONTROLLER_GPIO_A, INPUT_PULLUP);
   pinMode(HW_CONTROLLER_GPIO_B, INPUT_PULLUP);
+  pinMode(HW_CONTROLLER_GPIO_X, INPUT_PULLUP);
+  pinMode(HW_CONTROLLER_GPIO_Y, INPUT_PULLUP);
 }
 
 extern "C" uint32_t controller_read_input()
 {
   uint32_t u, d, l, r, s, t, a, b, x, y;
+
 #if defined(HW_CONTROLLER_GPIO_ANALOG_JOYSTICK)
-  int joyX = analogRead(HW_CONTROLLER_GPIO_LEFT_RIGHT);
+
+#if defined(HW_CONTROLLER_GPIO_REVERSE_UP)
+  int joyY = 4095 - analogRead(HW_CONTROLLER_GPIO_UP_DOWN);
+#else /* !defined(HW_CONTROLLER_GPIO_REVERSE_UD) */
   int joyY = analogRead(HW_CONTROLLER_GPIO_UP_DOWN);
+#endif /* !defined(HW_CONTROLLER_GPIO_REVERSE_UD) */
+
+#if defined(HW_CONTROLLER_GPIO_REVERSE_LF)
+  int joyX = 4095 - analogRead(HW_CONTROLLER_GPIO_LEFT_RIGHT);
+#else /* !defined(HW_CONTROLLER_GPIO_REVERSE_LF) */
+  int joyX = analogRead(HW_CONTROLLER_GPIO_LEFT_RIGHT);
+#endif /* !defined(HW_CONTROLLER_GPIO_REVERSE_LF) */
+
   // Serial.printf("joyX: %d, joyY: %d\n", joyX, joyY);
 #if defined(ARDUINO_ODROID_ESP32)
-  if (joyX > 2048 + 1024)
-  {
-    l = 0;
-    r = 1;
-  }
-  else if (joyX > 1024)
-  {
-    l = 1;
-    r = 0;
-  }
-  else
-  {
-    l = 1;
-    r = 1;
-  }
+
   if (joyY > 2048 + 1024)
   {
     u = 0;
@@ -62,22 +60,24 @@ extern "C" uint32_t controller_read_input()
     u = 1;
     d = 1;
   }
-#else  /* !defined(ARDUINO_ODROID_ESP32) */
   if (joyX > 2048 + 1024)
-  {
-    l = 1;
-    r = 0;
-  }
-  else if (joyX < 1024)
   {
     l = 0;
     r = 1;
+  }
+  else if (joyX > 1024)
+  {
+    l = 1;
+    r = 0;
   }
   else
   {
     l = 1;
     r = 1;
   }
+
+#else  /* !defined(ARDUINO_ODROID_ESP32) */
+
   if (joyY > 2048 + 1024)
   {
     u = 1;
@@ -93,12 +93,29 @@ extern "C" uint32_t controller_read_input()
     u = 1;
     d = 1;
   }
+
+  if (joyX > 2048 + 1024)
+  {
+    l = 1;
+    r = 0;
+  }
+  else if (joyX < 1024)
+  {
+    l = 0;
+    r = 1;
+  }
+  else
+  {
+    l = 1;
+    r = 1;
+  }
+
 #endif /* !defined(ARDUINO_ODROID_ESP32) */
 #else  /* !defined(HW_CONTROLLER_GPIO_ANALOG_JOYSTICK) */
-  l = digitalRead(HW_CONTROLLER_GPIO_LEFT);
-  r = digitalRead(HW_CONTROLLER_GPIO_RIGHT);
   u = digitalRead(HW_CONTROLLER_GPIO_UP);
   d = digitalRead(HW_CONTROLLER_GPIO_DOWN);
+  l = digitalRead(HW_CONTROLLER_GPIO_LEFT);
+  r = digitalRead(HW_CONTROLLER_GPIO_RIGHT);
 #endif /* !defined(HW_CONTROLLER_GPIO_ANALOG_JOYSTICK) */
 
   s = digitalRead(HW_CONTROLLER_GPIO_SELECT);
