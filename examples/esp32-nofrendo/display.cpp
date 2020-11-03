@@ -32,7 +32,6 @@ Arduino_ST7789 *gfx = new Arduino_ST7789(bus, -1 /* RST */, 1 /* rotation */, tr
 /* custom hardware */
 #else
 
-
 /* ST7789 ODROID Compatible pin connection */
 // #define TFT_BL 14
 // Arduino_ESP32SPI_DMA *bus = new Arduino_ESP32SPI_DMA(21 /* DC */, 5 /* CS */, SCK, MOSI, MISO);
@@ -102,12 +101,13 @@ extern "C" void display_write_frame(const uint8_t *data[])
     }
     else
     {
-        // ST7796 480 x 320 resolution
-        // crop 256 x 240 to 240 x 214
-        // then scale up width x 2 and scale up height x 1.5
+        /* ST7796 480 x 320 resolution */
 
-        // scale up height x 1.5 have 2 options
-        // Option 1: repeat a line for every 2 lines
+        /* Option 1:
+         * crop 256 x 240 to 240 x 214
+         * then scale up width x 2 and scale up height x 1.5
+         * repeat a line for every 2 lines
+         */
         // gfx->writeAddrWindow(frame_x, frame_y, frame_width, frame_height);
         // for (int16_t i = 10; i < (10 + 214); i++)
         // {
@@ -117,7 +117,12 @@ extern "C" void display_write_frame(const uint8_t *data[])
         //         gfx->writeIndexedPixelsDouble((uint8_t *)(data[i] + 8), myPalette, frame_line_pixels);
         //     }
         // }
-        // Option 2: simply blank a line for every 2 lines
+
+        /* Option 2:
+         * crop 256 x 240 to 240 x 214
+         * then scale up width x 2 and scale up height x 1.5
+         * simply blank a line for every 2 lines
+         */
         int16_t y = 0;
         for (int16_t i = 10; i < (10 + 214); i++)
         {
@@ -128,6 +133,37 @@ extern "C" void display_write_frame(const uint8_t *data[])
                 y++; // blank line
             }
         }
+
+        /* Option 3:
+         * crop 256 x 240 to 240 x 240
+         * then scale up width x 2 and scale up height x 1.33
+         * repeat a line for every 3 lines
+         */
+        // gfx->writeAddrWindow(frame_x, frame_y, frame_width, frame_height);
+        // for (int16_t i = 0; i < 240; i++)
+        // {
+        //     gfx->writeIndexedPixelsDouble((uint8_t *)(data[i] + 8), myPalette, frame_line_pixels);
+        //     if ((i % 3) == 1)
+        //     {
+        //         gfx->writeIndexedPixelsDouble((uint8_t *)(data[i] + 8), myPalette, frame_line_pixels);
+        //     }
+        // }
+
+        /* Option 4:
+         * crop 256 x 240 to 240 x 240
+         * then scale up width x 2 and scale up height x 1.33
+         * simply blank a line for every 3 lines
+         */
+        // int16_t y = 0;
+        // for (int16_t i = 0; i < 240; i++)
+        // {
+        //     gfx->writeAddrWindow(frame_x, y++, frame_width, 1);
+        //     gfx->writeIndexedPixelsDouble((uint8_t *)(data[i] + 8), myPalette, frame_line_pixels);
+        //     if ((i % 3) == 1)
+        //     {
+        //         y++; // blank line
+        //     }
+        // }
     }
     gfx->endWrite();
 }
