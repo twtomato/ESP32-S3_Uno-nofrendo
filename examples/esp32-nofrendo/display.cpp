@@ -6,11 +6,11 @@ extern "C"
 #include "hw_config.h"
 
 #include <Arduino_GFX_Library.h>
-#define TFT_BRIGHTNESS 128 /* 0 - 255 */
 
 /* M5Stack */
 #if defined(ARDUINO_M5Stack_Core_ESP32) || defined(ARDUINO_M5STACK_FIRE)
 
+#define TFT_BRIGHTNESS 255 /* 0 - 255 */
 #define TFT_BL 32
 Arduino_ESP32SPI_DMA *bus = new Arduino_ESP32SPI_DMA(27 /* DC */, 14 /* CS */, SCK, MOSI, MISO);
 Arduino_ILI9341_M5STACK *gfx = new Arduino_ILI9341_M5STACK(bus, 33 /* RST */, 1 /* rotation */);
@@ -18,6 +18,7 @@ Arduino_ILI9341_M5STACK *gfx = new Arduino_ILI9341_M5STACK(bus, 33 /* RST */, 1 
 /* Odroid-Go */
 #elif defined(ARDUINO_ODROID_ESP32)
 
+#define TFT_BRIGHTNESS 191 /* 0 - 255 */
 #define TFT_BL 14
 Arduino_ESP32SPI_DMA *bus = new Arduino_ESP32SPI_DMA(21 /* DC */, 5 /* CS */, SCK, MOSI, MISO);
 Arduino_ILI9341 *gfx = new Arduino_ILI9341(bus, -1 /* RST */, 3 /* rotation */);
@@ -25,12 +26,15 @@ Arduino_ILI9341 *gfx = new Arduino_ILI9341(bus, -1 /* RST */, 3 /* rotation */);
 /* TTGO T-Watch */
 #elif defined(ARDUINO_T) || defined(ARDUINO_TWATCH_BASE) || defined(ARDUINO_TWATCH_2020_V1) || defined(ARDUINO_TWATCH_2020_V2) // TTGO T-Watch
 
+#define TFT_BRIGHTNESS 255 /* 0 - 255 */
 #define TFT_BL 12
 Arduino_DataBus *bus = new Arduino_ESP32SPI_DMA(27 /* DC */, 5 /* CS */, 18 /* SCK */, 19 /* MOSI */, -1 /* MISO */);
 Arduino_ST7789 *gfx = new Arduino_ST7789(bus, -1 /* RST */, 1 /* rotation */, true /* IPS */, 240, 240, 0, 80);
 
 /* custom hardware */
 #else
+
+#define TFT_BRIGHTNESS 128 /* 0 - 255 */
 
 /* ST7789 ODROID Compatible pin connection */
 // #define TFT_BL 14
@@ -52,6 +56,20 @@ Arduino_TFT *gfx = new Arduino_ST7796(bus, -1 /* RST */, 1 /* rotation */);
 static int16_t w, h, frame_x, frame_y, frame_x_offset, frame_width, frame_height, frame_line_pixels;
 extern int16_t bg_color;
 extern uint16_t myPalette[];
+
+extern void display_begin()
+{
+    gfx->begin();
+    bg_color = gfx->color565(24, 28, 24); // DARK DARK GREY
+    gfx->fillScreen(bg_color);
+
+#ifdef TFT_BL
+    // turn display backlight on
+    ledcAttachPin(TFT_BL, 1);     // assign TFT_BL pin to channel 1
+    ledcSetup(1, 12000, 8);       // 12 kHz PWM, 8-bit resolution
+    ledcWrite(1, TFT_BRIGHTNESS); // brightness 0 - 255
+#endif
+}
 
 extern "C" void display_init()
 {
