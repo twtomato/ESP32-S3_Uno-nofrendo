@@ -12,6 +12,7 @@
 
 /* enable audio */
 #define HW_AUDIO
+#define HW_AUDIO_SAMPLERATE 22050
 
 /* controller is I2C M5Stack CardKB */
 #define HW_CONTROLLER_I2C_M5CARDKB
@@ -25,6 +26,7 @@
 
 /* enable audio */
 #define HW_AUDIO
+#define HW_AUDIO_SAMPLERATE 22050
 
 /* controller is GPIO */
 #define HW_CONTROLLER_GPIO
@@ -44,7 +46,10 @@
 // TTGO T-watch with game module only support SPIFFS
 #define FILESYSTEM_BEGIN SPIFFS.begin(false, FSROOT); FS filesystem = SPIFFS;
 
-/* no audio */
+/* buzzer audio */
+#define HW_AUDIO_BUZZER
+#define HW_AUDIO_BUZZER_PIN 4
+#define HW_AUDIO_SAMPLERATE 22050 // nofrendo minimum sample rate
 
 /* controller is GPIO */
 #define HW_CONTROLLER_GPIO
@@ -79,6 +84,7 @@
 #define HW_AUDIO_EXTDAC_WCLK 21
 #define HW_AUDIO_EXTDAC_BCLK 22
 #define HW_AUDIO_EXTDAC_DOUT 19
+#define HW_AUDIO_SAMPLERATE 22050
 
 /* controller is GPIO */
 #define HW_CONTROLLER_GPIO
