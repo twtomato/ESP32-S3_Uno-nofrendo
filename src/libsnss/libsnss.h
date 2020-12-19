@@ -349,6 +349,9 @@ extern "C"
    /* support functions */
    const char *SNSS_GetErrorString(SNSS_RETURN_CODE code);
 
+   static SNSS_FILE *snssFileBlock;
+   static char *blockBytes;
+
 #ifdef __cplusplus
 }
 #endif /* __cplusplus */
