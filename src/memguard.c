@@ -57,7 +57,7 @@ static int mem_blockcount = 0; /* allocated block count */
 static memblock_t *mem_record = NULL;
 
 #define GUARD_STRING "GgUuAaRrDdSsTtRrIiNnGgBbLlOoCcKk"
-#define GUARD_LENGTH 256 /* before and after allocated block */
+#define GUARD_LENGTH 32 /* before and after allocated block */
 
 /*
 ** Check the memory guard to make sure out of bounds writes have not
