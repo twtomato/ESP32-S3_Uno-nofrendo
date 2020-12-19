@@ -83,7 +83,7 @@ bitmap_t *bmp_create(int width, int height, int overdraw)
 
    pitch = width + (overdraw * 2); /* left and right */
 
-   addr = NOFRENDO_MALLOC((pitch * height) + 3); /* add max 32-bit aligned adjustment */
+   addr = NOFRENDO_MALLOC(((pitch * height) + 3) & 0xFFFFFFF8); /* add max 32-bit aligned adjustment */
    if (NULL == addr)
       return NULL;
 
