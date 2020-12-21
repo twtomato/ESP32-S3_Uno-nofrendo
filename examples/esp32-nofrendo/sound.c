@@ -16,7 +16,7 @@
 
 #if defined(HW_AUDIO)
 
-#define DEFAULT_FRAGSIZE 1024
+#define DEFAULT_FRAGSIZE 64
 static void (*audio_callback)(void *buffer, int length) = NULL;
 QueueHandle_t queue;
 static int16_t *audio_frame;
@@ -40,8 +40,8 @@ int osd_init_sound()
 		.communication_format = I2S_COMM_FORMAT_PCM | I2S_COMM_FORMAT_I2S_MSB,
 #endif /* !defined(HW_AUDIO_EXTDAC) */
 		.intr_alloc_flags = ESP_INTR_FLAG_LEVEL1,
-		.dma_buf_count = 6,
-		.dma_buf_len = 512,
+		.dma_buf_count = 7,
+		.dma_buf_len = 256,
 		.use_apll = false,
 	};
 	i2s_driver_install(I2S_NUM_0, &cfg, 2, &queue);
