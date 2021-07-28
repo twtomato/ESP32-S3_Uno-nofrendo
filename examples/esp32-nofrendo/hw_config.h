@@ -67,6 +67,8 @@
 #else
 
 // Uncomment one of below, ESP32 support SPIFFS SD_MMC and SD
+/* FatFS */
+// #define FILESYSTEM_BEGIN FFat.begin(false, FSROOT); FS filesystem = FFat;
 /* SPIFFS */
 // #define FILESYSTEM_BEGIN SPIFFS.begin(false, FSROOT); FS filesystem = SPIFFS;
 /* 1-bit SD mode SD_MMC, always retry once for begin() failed */

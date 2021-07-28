@@ -3,9 +3,10 @@
  */
 #include <esp_wifi.h>
 #include <esp_task_wdt.h>
+#include <FFat.h>
+#include <SPIFFS.h>
 #include <SD.h>
 #include <SD_MMC.h>
-#include <SPIFFS.h>
 
 #include <Arduino_GFX_Library.h>
 
