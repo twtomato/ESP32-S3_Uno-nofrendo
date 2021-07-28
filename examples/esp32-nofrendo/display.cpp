@@ -36,6 +36,11 @@ Arduino_ST7789 *gfx = new Arduino_ST7789(bus, -1 /* RST */, 1 /* rotation */, tr
 
 #define TFT_BRIGHTNESS 128 /* 0 - 255 */
 
+/* HX8357B */
+// #define TFT_BL 27
+// Arduino_DataBus *bus = new Arduino_ESP32SPI(-1 /* DC */, 5 /* CS */, 18 /* SCK */, 23 /* MOSI */, -1 /* MISO */);
+// Arduino_TFT *gfx = new Arduino_HX8357B(bus, 33, 3 /* rotation */, true /* IPS */);
+
 /* ST7789 ODROID Compatible pin connection */
 // #define TFT_BL 14
 // Arduino_DataBus *bus = new Arduino_ESP32SPI(21 /* DC */, 5 /* CS */, SCK, MOSI, MISO);
