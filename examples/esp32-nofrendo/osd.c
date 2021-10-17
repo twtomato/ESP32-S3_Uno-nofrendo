@@ -1,4 +1,6 @@
 /* start rewrite from: https://github.com/espressif/esp32-nesemu.git */
+#include <string.h>
+
 #include <freertos/FreeRTOS.h>
 #include <freertos/timers.h>
 #include <freertos/task.h>
