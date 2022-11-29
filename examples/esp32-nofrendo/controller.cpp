@@ -30,7 +30,7 @@ extern "C" uint32_t controller_read_input()
 
 #if defined(HW_CONTROLLER_GPIO_ANALOG_JOYSTICK)
 
-#if defined(HW_CONTROLLER_GPIO_REVERSE_UP)
+#if defined(HW_CONTROLLER_GPIO_REVERSE_UD)
   int joyY = 4095 - analogRead(HW_CONTROLLER_GPIO_UP_DOWN);
 #else /* !defined(HW_CONTROLLER_GPIO_REVERSE_UD) */
   int joyY = analogRead(HW_CONTROLLER_GPIO_UP_DOWN);
