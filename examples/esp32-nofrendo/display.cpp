@@ -13,7 +13,7 @@ extern "C"
 #define TFT_BRIGHTNESS 255 /* 0 - 255 */
 #define TFT_BL 32
 Arduino_DataBus *bus = new Arduino_ESP32SPI(27 /* DC */, 14 /* CS */, SCK, MOSI, MISO);
-Arduino_ILI9341_M5STACK *gfx = new Arduino_ILI9341_M5STACK(bus, 33 /* RST */, 1 /* rotation */);
+Arduino_ILI9342 *gfx = new Arduino_ILI9342(bus, 33 /* RST */, 1 /* rotation */);
 
 /* Odroid-Go */
 #elif defined(ARDUINO_ODROID_ESP32)
