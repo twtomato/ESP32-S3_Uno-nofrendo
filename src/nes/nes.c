@@ -478,7 +478,7 @@ int nes_insertcart(const char *filename, nes_t *machine)
    nes6502_setcontext(machine->cpu);
 
    /* rom file */
-   machine->rominfo = rom_load(filename);
+   machine->rominfo = rom_load(filename, machine->ppu);
    if (NULL == machine->rominfo)
       goto _fail;
 

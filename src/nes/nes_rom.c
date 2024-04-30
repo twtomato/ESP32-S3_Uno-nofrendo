@@ -195,7 +195,7 @@ static int rom_loadrom(FILE *fp, rominfo_t *rominfo)
 }
 
 /* If we've got a VS. system game, load in the palette, as well */
-static void rom_checkforpal(rominfo_t *rominfo)
+static void rom_checkforpal(rominfo_t *rominfo, ppu_t *ppu)
 {
    FILE *fp;
    rgb_t vs_pal[64];
@@ -222,7 +222,8 @@ static void rom_checkforpal(rominfo_t *rominfo)
    /* TODO: this should really be a *SYSTEM* flag */
    rominfo->flags |= ROM_FLAG_VERSUS;
    /* TODO: bad, BAD idea, calling nes_getcontextptr... */
-   ppu_setpal(nes_getcontextptr()->ppu, vs_pal);
+   // ppu_setpal(nes_getcontextptr()->ppu, vs_pal);
+   ppu_setpal(ppu, vs_pal);
    nofrendo_log_printf("Game specific palette found -- assuming VS. UniSystem\n");
 }
 
@@ -418,7 +419,7 @@ char *rom_getinfo(rominfo_t *rominfo)
 }
 
 /* Load a ROM image into memory */
-rominfo_t *rom_load(const char *filename)
+rominfo_t *rom_load(const char *filename, ppu_t *ppu)
 {
    FILE *fp;
    rominfo_t *rominfo;
@@ -472,7 +473,7 @@ rominfo_t *rom_load(const char *filename)
    rom_loadsram(rominfo);
 
    /* See if there's a palette we can load up */
-   rom_checkforpal(rominfo);
+   rom_checkforpal(rominfo, ppu);
 
    gui_sendmsg(GUI_GREEN, "ROM loaded: %s", rom_getinfo(rominfo));
 

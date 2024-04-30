@@ -27,7 +27,7 @@
 #define _NES_ROM_H_
 
 #include <unistd.h>
-
+#include "nes_ppu.h"
 #include "../osd.h"
 
 typedef enum
@@ -62,7 +62,7 @@ typedef struct rominfo_s
 } rominfo_t;
 
 extern int rom_checkmagic(const char *filename);
-extern rominfo_t *rom_load(const char *filename);
+extern rominfo_t *rom_load(const char *filename, ppu_t *ppu);
 extern void rom_free(rominfo_t **rominfo);
 extern char *rom_getinfo(rominfo_t *rominfo);
 
