@@ -33,28 +33,15 @@ Arduino_ST7789 *gfx = new Arduino_ST7789(bus, -1 /* RST */, 1 /* rotation */, tr
 
 /* custom hardware */
 #else
+// ESP32 CYD 
+// #define TFT_BRIGHTNESS 128 /* 0 - 255 */
+// #define TFT_BL 21
+// Arduino_DataBus *bus = new Arduino_ESP32SPI(2 /* DC */, 15 /* CS */, 14 /* SCK */, 13 /* MOSI */, 12 /* MISO */);
+// Arduino_ILI9341 *gfx = new Arduino_ILI9341(bus, -1 /* RST */, 1 /* rotation */);
 
-#define TFT_BRIGHTNESS 128 /* 0 - 255 */
-
-/* HX8357B */
-// #define TFT_BL 27
-// Arduino_DataBus *bus = new Arduino_ESP32SPI(-1 /* DC */, 5 /* CS */, 18 /* SCK */, 23 /* MOSI */, -1 /* MISO */);
-// Arduino_TFT *gfx = new Arduino_HX8357B(bus, 33, 3 /* rotation */, true /* IPS */);
-
-/* ST7789 ODROID Compatible pin connection */
-// #define TFT_BL 14
-// Arduino_DataBus *bus = new Arduino_ESP32SPI(21 /* DC */, 5 /* CS */, SCK, MOSI, MISO);
-// Arduino_ST7789 *gfx = new Arduino_ST7789(bus, -1 /* RST */, 1 /* rotation */, true /* IPS */);
-
-/* ST7796 on breadboard */
-// #define TFT_BL 32
-Arduino_DataBus *bus = new Arduino_ESP32SPI(32 /* DC */, -1 /* CS */, 25 /* SCK */, 33 /* MOSI */, -1 /* MISO */);
-Arduino_TFT *gfx = new Arduino_ST7796(bus, -1 /* RST */, 1 /* rotation */);
-
-/* ST7796 on LCDKit */
-// #define TFT_BL 23
-// Arduino_DataBus *bus = new Arduino_ESP32SPI(19 /* DC */, 5 /* CS */, 22 /* SCK */, 21 /* MOSI */, -1 /* MISO */);
-// Arduino_ST7796 *gfx = new Arduino_ST7796(bus, 18, 1 /* rotation */);
+// S3 Uno
+Arduino_DataBus *bus = new Arduino_ESP32PAR8(7 /* DC */, 6 /* CS */,  1 /* WR */, 2 /* RD */, 21 /* D0 */, 46 /* D1 */, 18 /* D2 */, 17 /* D3 */, 19 /* D4 */, 20 /* D5 */, 3 /* D6 */, 14 /* D7 */); // S3 Uno
+Arduino_ILI9488 *gfx = new Arduino_ILI9488(bus, 5 /* RST */, 1 /* Rotation */); // S3 Uno
 
 #endif /* custom hardware */
 

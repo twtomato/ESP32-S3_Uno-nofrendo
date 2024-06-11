@@ -76,12 +76,12 @@
 /* 4-bit SD mode SD_MMC, always retry once for begin() failed */
 // #define FILESYSTEM_BEGIN (!SD_MMC.begin(FSROOT, false)) && (!SD_MMC.begin(FSROOT, false)); FS filesystem = SD_MMC;
 /* SD using default SPI settings */
-// #define FILESYSTEM_BEGIN SD.begin(22 /* SS */, SPI, 8000000, FSROOT); FS filesystem = SD;
+#define FILESYSTEM_BEGIN SD.begin(10 /* SS */, SPI, 8000000, FSROOT); FS filesystem = SD; // S3 Uno SD_CS GPIO10
 /* SD using custom SPI settings */
-#define FILESYSTEM_BEGIN SPIClass spi = SPIClass(HSPI); spi.begin(14, 2, 15, 13); SD.begin(13, spi, 8000000, FSROOT); FS filesystem = SD;
+//#define FILESYSTEM_BEGIN SPIClass spi = SPIClass(HSPI); spi.begin(14, 2, 15, 13); SD.begin(5, spi, 8000000, FSROOT); FS filesystem = SD;
 
 // enable audio
-#define HW_AUDIO
+//#define HW_AUDIO
 #define HW_AUDIO_EXTDAC
 #define HW_AUDIO_EXTDAC_WCLK 21
 #define HW_AUDIO_EXTDAC_BCLK 22
@@ -89,7 +89,7 @@
 #define HW_AUDIO_SAMPLERATE 22050
 
 /* controller is GPIO */
-#define HW_CONTROLLER_GPIO
+//#define HW_CONTROLLER_GPIO
 #define HW_CONTROLLER_GPIO_ANALOG_JOYSTICK
 // #define HW_CONTROLLER_GPIO_REVERSE_UD
 #define HW_CONTROLLER_GPIO_UP_DOWN 34
