@@ -1,13 +1,8 @@
-# arduino-nofrendo
+# ESP32-S3_Uno-nofrendo
 
-This is a special nofrendo version as a Arduino library.
+This is a quick-connect NES emulator project that utilizes the ESP32-S3 UNO development board paired with an ILI9488 8-bit parallel LCD shield. Simply align and attach the two modules together, eliminating the need for complex SPI wiring and reducing the time spent debugging potential wiring errors. By using this plug-and-play approach, you can get started with the project more efficiently.
 
-## Implementation
-
-Simple implement all function definded in osd.h to make it work.
-
-Any Arduino platform that have enough processing power should work.
-
-## Examples
-
-- esp32-nofrendo.ino in examples folder is rewritten from https://github.com/espressif/esp32-nesemu.git
+![image](images/IMG_20240611_174034.jpg)
+![image](images/IMG_20240611_174233.jpg)
+![image](images/IMG_20240611_174252.jpg)
+![image](images/IMG_20240611_174432.jpg)
